@@ -11,11 +11,12 @@ class List {
 template <class T> class LCIter;
 
 template <class T>
-class LIter {
+class Iter {
+public:
   friend class List<T>;
   List<T>* that;
 
-  //TODO solve copying problems
+private:
   bool isNext() {
     return that->next != nullptr;
   }
@@ -26,7 +27,11 @@ class LIter {
       throw std::logic_error("Cannot get next if there is no next :(");
     }
   }
-  //ends here
+};
+
+template <class T>
+class LIter : private Iter<T> {
+  using Iter<T>::that;
 
   void changeData(T newData) {
     that->data = newData;
@@ -37,22 +42,8 @@ class LIter {
 };
 
 template <class T>
-class LCIter {
-  friend class List<T>;
-  List<T>* that;
-
-  //TODO solve copying porblems
-  bool isNext() {
-    return that->next != nullptr;
-  }
-  void next() {
-    if (isNext()) that = that->next;
-    else {
-      delete that;
-      throw std::logic_error("Cannot get next if there is no next :(");
-    }
-  }
-  //ends here
+class LCIter : private Iter<T>{
+  using Iter<T>::that;
 
   T getData() {
     return that->data;
