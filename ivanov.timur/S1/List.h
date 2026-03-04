@@ -69,7 +69,7 @@ class List {
     next = new List<T>(newData, next);
   }
 
-  void deleteThis() {
+  void deleteSelf() {
     List<T>* tmp = next;
     delete this;
     this = tmp;
@@ -81,45 +81,38 @@ class List {
 };
 
 template <class T>
-LCIter<T> getFirstIter(List<T>* head) {
-  return new LCIter<T>(head);
-}
-
-template <class T>
 LCIter<T> getLast(List<T>* head) {
-  List<T>* tmp = head;
-  while (tmp->next != nullptr) tmp = tmp->next;
-  return new LCIter<T>(tmp);
-}
-
-template <class T>
-List<T>* addHead(List<T>* head, T data) {
-  List<T> tmp = new List<T>(data, head);
-  return tmp;
+  List<T>* tmp = copy(head);
+  clear(head);
+  while (tmp->next != nullptr) {
+    tmp = tmp->next;
+  }
+  return tmp->getThisCIter();
 }
 
 template <class T>
 void addLast(List<T>* head, T data) {
-  while (head->next != nullptr) head = head->next;
-  head->next = new List<T>*(data);
-}
-
-template <class T>
-List<T>* deleteHead(List<T>* head) {
-  List<T>* tmp = head->next;
-  delete head;
-  return tmp;
+  List<T>* tmp = copy(head);
+  clear(head);
+  while (tmp->next != nullptr) {
+    tmp = tmp->next;
+  }
+  tmp->next = new List<T>*(data);
 }
 
 template <class T>
 void deleteLast(List<T>* head) {
-  while (head->next != nullptr) head = head->next;
-  delete head;
+  while (head->next != nullptr) {
+    head = head->next;
+  } //STOP COPYING CODE AHHHH
+  delete head; //does this screw me over?
 }
 
 template <class T>
 void clear(List<T>* head) {
-  while (head->next != nullptr) head = deleteHead(head);
+  while (head->next != nullptr) {
+    head->deleteSelf();
+  }
   delete head;
 }
 
@@ -127,25 +120,26 @@ template <class T>
 List<T>* copy(List<T>* thisHead) {
   List<T> newHead = *thisHead;
   try {
-    List<T>* tmp = newHead;
-    while (thisHead != nullptr) {
+    List<T>* tmp = newHead; // i dont think thats correct
+    while (thisHead->next != nullptr) { //does this work?
       tmp->next = new List<T>(thisHead->next->data, nullptr);
       tmp = tmp->next;
       thisHead = thisHead->next;
-    }
-  } catch (...) {
-    clear(newHead);
+    } //do I need to think about last elem?
+  } catch (...) { //which error does this throw?
+    clear(newHead); //newHead is an object, not sure whether that would be correct
     return nullptr;
   }
   return newHead;
 }
 
+//TODO revamp move
 template <class T>
 List<T>* move(List<T>* thisHead) {
   List<T>* newHead = new List<T>(thisHead->data, thisHead->next);
   try {
-    List<T>* tmp = deleteHead(thisHead);
-  } catch (...) {
+    List<T>* tmp = deleteHead(thisHead); //this garbage clearly doesnt work
+  } catch (...) { //still unsure of error thrown
     delete newHead;
     return nullptr;
   }
@@ -157,7 +151,9 @@ size_t sum(LCIter<T>* target) {
   size_t ans = target->getData();
   while (target->isNext()) {
     target->next();
-    if (std::numeric_limits<size_t>::max() - ans < target->getData()) throw std::logic_error("Target exceeds numeric limits");
+    if (std::numeric_limits<size_t>::max() - ans < target->getData()) {
+      throw std::logic_error("Target exceeds numeric limits");
+    }
     ans += target->getData();
   }
   return ans;
