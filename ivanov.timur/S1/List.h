@@ -78,6 +78,14 @@ class List {
   void copy(List<T>* target) {
     target->data = this->data;
   }
+
+  LIter<T> getLast() {
+    List<T>* tmp = this;
+    while (tmp->next != nullptr) {
+      tmp = tmp->next;
+    }
+    return tmp->getThisIter();
+  }
 };
 
 template <class T>
@@ -92,12 +100,8 @@ LCIter<T> getLast(List<T>* head) {
 
 template <class T>
 void addLast(List<T>* head, T data) {
-  List<T>* tmp = copy(head);
-  clear(head);
-  while (tmp->next != nullptr) {
-    tmp = tmp->next;
-  }
-  tmp->next = new List<T>*(data);
+  LIter<T> tmp = getLast(head);
+  tmp.that->addBack(data);
 }
 
 template <class T>
