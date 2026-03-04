@@ -2,19 +2,26 @@
 #define LIST_H
 
 template <class T> class List;
+template <class T> class LCIter;
 
 template <class T>
 class LIter {
   friend class List<T>;
   List<T>* that;
 
-
+  void next(){}
+  void changeData(T newData){}
+  LCIter<T> throwConst() {}
 };
 
 template <class T>
 class LCIter {
   friend class List<T>;
   List<T>* that;
+
+  void next(){}
+  T getData(){}
+  LIter<T> throwConst(){}
 };
 
 template <class T>
@@ -24,15 +31,15 @@ class List {
 };
 
 template <class T>
-LIter<T> getFirstIter(List<T>* head) {
-  return new LIter<T>(head);
+LCIter<T> getFirstIter(List<T>* head) {
+  return new LCIter<T>(head);
 }
 
 template <class T>
-LIter<T> getLast(List<T>* head) {
+LCIter<T> getLast(List<T>* head) {
   List<T>* tmp = head;
   while (tmp->next != nullptr) tmp = tmp->next;
-  return new LIter<T>(tmp);
+  return new LCIter<T>(tmp);
 }
 
 template <class T>
