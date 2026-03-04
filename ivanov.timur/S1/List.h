@@ -1,13 +1,9 @@
 #ifndef LIST_H
 #define LIST_H
+#include <limits>
 #include <stdexcept>
 
-template <class T>
-class List {
-  T data;
-  List<T>* next = nullptr;
-};
-
+template <class T> class List;
 template <class T> class LCIter;
 
 template <class T>
@@ -17,11 +13,11 @@ public:
   List<T>* that;
 
 private:
-  bool isNext() {
+  bool hasNext() {
     return that->next != nullptr;
   }
   void next() {
-    if (isNext()) that = that->next;
+    if (hasNext()) that = that->next;
     else {
       delete that;
       throw std::logic_error("Cannot get next if there is no next :(");
@@ -50,6 +46,37 @@ class LCIter : private Iter<T>{
   }
   LIter<T> throwConst() {
     return new LIter<T>(that);
+  }
+};
+
+template <class T>
+class List {
+  T data;
+  List<T>* next = nullptr;
+
+  LCIter<T> getThisCIter() {
+    return new LCIter<T>(this);
+  }
+  LIter<T> getThisIter() {
+    return new LIter<T>(this);
+  }
+
+  void addFront(T newData) {
+    List<T> tmp = new List<T>(newData, this);
+    this = tmp;
+  }
+  void addBack(T newData) {
+    next = new List<T>(newData, next);
+  }
+
+  void deleteThis() {
+    List<T>* tmp = next;
+    delete this;
+    this = tmp;
+  }
+
+  void copy(List<T>* target) {
+    target->data = this->data;
   }
 };
 
@@ -123,5 +150,16 @@ List<T>* move(List<T>* thisHead) {
     return nullptr;
   }
   return newHead;
+}
+
+template <class T>
+size_t sum(LCIter<T>* target) {
+  size_t ans = target->getData();
+  while (target->isNext()) {
+    target->next();
+    if (std::numeric_limits<size_t>::max() - ans < target->getData()) throw std::logic_error("Target exceeds numeric limits");
+    ans += target->getData();
+  }
+  return ans;
 }
 #endif
