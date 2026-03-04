@@ -1,7 +1,13 @@
 #ifndef LIST_H
 #define LIST_H
+#include <stdexcept>
 
-template <class T> class List;
+template <class T>
+class List {
+  T data;
+  List<T>* next = nullptr;
+};
+
 template <class T> class LCIter;
 
 template <class T>
@@ -9,9 +15,25 @@ class LIter {
   friend class List<T>;
   List<T>* that;
 
-  void next(){}
-  void changeData(T newData){}
-  LCIter<T> throwConst() {}
+  //TODO solve copying problems
+  bool isNext() {
+    return that->next != nullptr;
+  }
+  void next() {
+    if (isNext()) that = that->next;
+    else {
+      delete that;
+      throw std::logic_error("Cannot get next if there is no next :(");
+    }
+  }
+  //ends here
+
+  void changeData(T newData) {
+    that->data = newData;
+  }
+  LCIter<T> throwConst() {
+    return new LCIter<T>(that);
+  }
 };
 
 template <class T>
@@ -19,15 +41,25 @@ class LCIter {
   friend class List<T>;
   List<T>* that;
 
-  void next(){}
-  T getData(){}
-  LIter<T> throwConst(){}
-};
+  //TODO solve copying porblems
+  bool isNext() {
+    return that->next != nullptr;
+  }
+  void next() {
+    if (isNext()) that = that->next;
+    else {
+      delete that;
+      throw std::logic_error("Cannot get next if there is no next :(");
+    }
+  }
+  //ends here
 
-template <class T>
-class List {
-  T data;
-  List<T>* next = nullptr;
+  T getData() {
+    return that->data;
+  }
+  LIter<T> throwConst() {
+    return new LIter<T>(that);
+  }
 };
 
 template <class T>
