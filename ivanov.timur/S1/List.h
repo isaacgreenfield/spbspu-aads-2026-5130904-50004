@@ -106,10 +106,7 @@ void addLast(List<T>* head, T data) {
 
 template <class T>
 void deleteLast(List<T>* head) {
-  while (head->next != nullptr) {
-    head = head->next;
-  } //STOP COPYING CODE AHHHH
-  delete head; //does this screw me over?
+  delete getLast(head).that;
 }
 
 template <class T>
