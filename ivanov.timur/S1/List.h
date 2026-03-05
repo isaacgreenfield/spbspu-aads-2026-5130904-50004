@@ -8,12 +8,12 @@ template <class T>
 class Iter {
 public:
   class List {
-  protected:
+  public:
+    List(const T& d, List* n = nullptr) : data(d), next(n) {}
     friend class Iter<T>;
     T data;
     List* next;
 
-    List(const T& d, List* n = nullptr) : data(d), next(n) {}
     Iter<T> getIter() {
       return Iter<T>(this);
     }
