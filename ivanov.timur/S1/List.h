@@ -9,34 +9,36 @@ template <class T> class LCIter;
 template <class T>
 class Iter {
 public:
-  template <class T>
   class List {
     friend class Iter<T>;
     T data;
-    List<T>* next;
+    List* next;
 
-    Iter<T>* getIter() {
-      return new Iter<T>(this);
+    List(const T& d, List* n = nullptr) : data(d), next(n) {}
+
+  protected:
+    Iter<T> getIter() {
+      return Iter<T>(this);
     }
-    List<T>* addFront(T newData) {
-      return new List<T>(newData, this);
+    List* addFront(T newData) {
+      return new List(newData, this);
     }
     void addBack(T newData) {
-      next = new List<T>(newData, next);
+      next = new List(newData, next);
     }
 
-    List<T>* deleteSelf() {
-      List<T>* tmp = next;
+    List* deleteSelf() {
+      List* tmp = next;
       delete this;
       return tmp;
     }
 
-    void copy(List<T>* target) {
+    void copy(List* target) {
       target->data = this->data;
     }
 
     Iter<T>* getLast() {
-      List<T>* tmp = this;
+      List* tmp = this;
       while (tmp->next != nullptr) {
         tmp = tmp->next;
       }
@@ -44,7 +46,9 @@ public:
     }
   };
 
-  List<T>* that;
+  List* that;
+
+  explicit Iter(List* p) : that(p) {}
 
   bool hasNext() {
     return (that != nullptr && that->next != nullptr);
@@ -53,11 +57,11 @@ public:
     that = that->next;
   }
 
-  LIter<T>* getReal() {
-    return new LIter<T>(this->that);
+  LIter<T> getReal() {
+    return LIter<T>(this->that);
   }
-  LCIter<T>* getConst() {
-    return new LCIter<T>(this->that);
+  LCIter<T> getConst() {
+    return LCIter<T>(this->that);
   }
 };
 
