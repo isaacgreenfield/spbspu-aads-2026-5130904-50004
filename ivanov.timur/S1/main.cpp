@@ -1,5 +1,6 @@
 #include<iostream>
 #include "List.h"
+#include <limits>
 
 template <class T>
 size_t sum(LCIter<T> target) {
