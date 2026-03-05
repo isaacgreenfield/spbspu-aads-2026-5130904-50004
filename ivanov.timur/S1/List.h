@@ -37,7 +37,7 @@ public:
       target->data = this->data;
     }
 
-    Iter<T>* getLast() {
+    Iter<T> getLast() {
       List* tmp = this;
       while (tmp->next != nullptr) {
         tmp = tmp->next;
@@ -124,18 +124,5 @@ Iter<T> copy(Iter<T> thisHead) {
     return nullptr;
   }
   return newHead;
-}
-
-template <class T>
-size_t sum(LCIter<T> target) {
-  size_t ans = target.getData();
-  while (target.hasNext()) {
-    target.next();
-    if (std::numeric_limits<size_t>::max() - ans < target.getData()) {
-      throw std::logic_error("Target exceeds numeric limits");
-    }
-    ans += target.getData();
-  }
-  return ans;
 }
 #endif
