@@ -9,45 +9,45 @@ template <class T> class LCIter;
 template <class T>
 class Iter {
 public:
+  template <class T>
   class List {
-    friend class Iter;
+    friend class Iter<T>;
     T data;
     List<T>* next;
 
     Iter<T>* getIter() {
       return new Iter<T>(this);
     }
-    void addFront(T newData) {
-      List<T>* tmp = new List<T>(newData, this);
-      this = tmp;
+    List<T>* addFront(T newData) {
+      return new List<T>(newData, this);
     }
     void addBack(T newData) {
       next = new List<T>(newData, next);
     }
 
-    void deleteSelf() {
+    List<T>* deleteSelf() {
       List<T>* tmp = next;
       delete this;
-      this = tmp;
+      return tmp;
     }
 
     void copy(List<T>* target) {
       target->data = this->data;
     }
 
-    Iter<T> getLast() {
+    Iter<T>* getLast() {
       List<T>* tmp = this;
-      while (tmp->next->next != nullptr) {
+      while (tmp->next != nullptr) {
         tmp = tmp->next;
       }
-      return tmp->getThisIter();
+      return tmp->getIter();
     }
   };
 
   List<T>* that;
 
   bool hasNext() {
-    return that->next != nullptr;
+    return (that != nullptr && that->next != nullptr);
   }
   void next() noexcept{
     that = that->next;
