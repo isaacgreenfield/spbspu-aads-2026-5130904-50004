@@ -11,10 +11,6 @@ class Iter {
   List* data_;
   explicit Iter(List<T>* data): data_(data) {}
 
-  T pull() {
-    return data_->data_;
-  }
-
   Iter getIterByPos(size_t pos) {
     Iter tmp = Iter(new List(data_->data_, data_->next_));
     if (tmp.data_ == nullptr) throw std::logic_error("empty list");
@@ -30,10 +26,6 @@ class Iter {
     while (tmp.hasNext()) tmp.next();
     return tmp;
   }
-
-  void push(T data) {
-    data_->next_ = new List(data, data_->next_);
-  }
   bool hasNext() {
     return data_->next_ != nullptr;
   }
@@ -44,11 +36,22 @@ class Iter {
 
 };
 
-//template <class T>
-//class LIter : public Iter<T> {
-//};
-//template <class T>
-//class LCIter : public Iter<T>{
-//};
+template <class T>
+class LIter : public Iter<T> {
+  using Iter<T>::data_;
+
+  void push(T data) {
+    data_->next_ = new typename Iter<T>::List(data, data_->next_);
+  }
+
+};
+template <class T>
+class LCIter : public Iter<T>{
+  using Iter<T>::data_;
+
+  T pull() {
+    return data_->data_;
+  }
+};
 
 #endif
