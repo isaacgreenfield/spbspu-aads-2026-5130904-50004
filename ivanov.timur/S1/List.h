@@ -21,15 +21,15 @@ namespace ivanov {
     Iter& operator=(Iter&&) noexcept = default;
 
     T& operator*() const noexcept {
-      return ptr->data_;
+      return ptr->data;
     }
     T* operator->() const noexcept {
-      return &(ptr->data_);
+      return &(ptr->data);
     }
 
     Iter& operator++() noexcept {
-      if (ptr == nullptr || ptr->next_ == nullptr) throw std::bad_alloc();
-      ptr = ptr->next_;
+      if (ptr == nullptr || ptr->next == nullptr) throw std::bad_alloc();
+      ptr = ptr->next;
       return *this;
     }
 
@@ -58,14 +58,14 @@ namespace ivanov {
     CIter& operator=(CIter&&) noexcept = default;
 
     const T& operator*() const noexcept {
-      return ptr->data_;
+      return ptr->data;
     }
     const T* operator->() const noexcept {
-      return &(ptr->data_);
+      return &(ptr->data);
     }
 
     CIter& operator++() noexcept {
-      ptr = ptr->next_;
+      ptr = ptr->next;
       return *this;
     }
 
@@ -83,7 +83,9 @@ namespace ivanov {
 
   template <typename T>
   class List {
-  private:
+    friend class Iter<T>;
+    friend class CIter<T>;
+  protected:
     struct Elem {
       T data;
       Elem* next;

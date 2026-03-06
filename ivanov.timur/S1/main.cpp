@@ -3,78 +3,136 @@
 
 using namespace ivanov;
 
-int main(){
-  std::string wtmp;
-  int ntmp;
-
+int main() {
   List<std::string> names;
   List<List<int>> nums;
 
-  try {
-    while (!std::cin.eof()) {
-      std::cin >> wtmp;
-      names.push_back(wtmp);
-      List<int> curr;
-      while (wtmp != "\n") {
-        std::cin >> wtmp;
-        ntmp = std::stoi(wtmp);
-        curr.push_back(ntmp);
+  std::string token;
+  char c;
+  bool is_new_line = true;
+
+  while (std::cin.get(c)) {
+    if (std::isspace(static_cast<unsigned char>(c))) {
+      if (!token.empty()) {
+        if (is_new_line) {
+          names.push_back(token);
+          nums.push_back(List<int>());
+          is_new_line = false;
+        } else {
+          try {
+            size_t pos;
+            int val = std::stoi(token, &pos);
+            if (pos == token.length()) {
+              nums.back().push_back(val);
+            }
+          } catch (const std::exception&) {
+          }
+        }
+        token.clear();
       }
-      nums.push_back(std::move(curr));
+      if (c == '\n') {
+        is_new_line = true;
+      }
+    } else {
+      token += c;
     }
-  } catch (std::bad_alloc& e) {
+  }
+
+  if (!token.empty()) {
+    if (is_new_line) {
+      names.push_back(token);
+      nums.push_back(List<int>());
+    } else {
+      try {
+        size_t pos;
+        int val = std::stoi(token, &pos);
+        if (pos == token.length()) {
+          nums.back().push_back(val);
+        }
+      } catch (const std::exception&) {
+      }
+    }
+  }
+
+  if (names.empty()) {
+    return 0;
+  }
+  bool first_name = true;
+  for (auto it = names.cbegin(); it != names.cend(); ++it) {
+    if (!first_name) std::cout << " ";
+    std::cout << *it;
+    first_name = false;
+  }
+  std::cout << "\n";
+
+  size_t max_size = 0;
+  for (auto it = nums.cbegin(); it != nums.cend(); ++it) {
+    if (it->size() > max_size) {
+      max_size = it->size();
+    }
+  }
+
+  if (max_size == 0) {
+    return 0;
+  }
+
+  List<int> sums;
+  List<CIter<int>> iters;
+  for (auto it = nums.cbegin(); it != nums.cend(); ++it) {
+    iters.push_back(it->cbegin());
+  }
+
+  try {
+    for (size_t col = 0; col < max_size; ++col) {
+      int current_sum = 0;
+      bool first_in_row = true;
+
+      if (!iters.empty()) {
+        auto iters_it = iters.begin();
+        auto nums_it = nums.cbegin();
+
+        for (size_t i = 0; i < iters.size(); ++i) {
+          if (*iters_it != nums_it->cend()) {
+            if (!first_in_row) std::cout << " ";
+            std::cout << **iters_it;
+            ivanov::sum(current_sum, **iters_it);
+
+            first_in_row = false;
+            ++(*iters_it);
+          }
+
+          if (i < iters.size() - 1) {
+            ++iters_it;
+            ++nums_it;
+          }
+        }
+      }
+
+      if (!first_in_row) {
+        std::cout << "\n";
+        sums.push_back(current_sum);
+      } else {
+        break;
+      }
+    }
+  } catch (const std::bad_alloc&) {
     std::cerr << "Bad allocation failure\n";
     return 1;
-  }
-
-  auto name = names.cbegin();
-  for (size_t i = 0; i < names.size(); ++i) {
-    std::cout << *name;
-    if (i != names.size() - 1) std::cout << " ";
-    else std::cout << "\n";
-    ++name;
-  }
-
-  List<Iter<int>> iters;
-  Iter<List<int>> it = nums.begin();
-  size_t max = it->size();
-  iters.push_back(it->begin());
-  for (size_t i = 0; i < nums.size(); ++i) {
-    ++it;
-    iters.push_back(it->begin());
-    if (it->size() > max) max = it->size();
-  }
-
-  Iter<Iter<int>> tm = iters.begin();
-  List<int> sums;
-  try {
-    int s = 0;
-    for (size_t i = 0; i < max; ++i) {
-      Iter<Iter<int>> tmp = tm;
-      for (size_t j = 0; j < i; ++j) tmp->operator++();
-      try {
-        int t = tmp->operator*();
-        std::cout << t;
-        if (i != max - 1) std::cout << " ";
-        sum(s, t);
-      }
-      catch (std::bad_alloc& e) {
-      }
-    }
-    std::cout << "\n";
-    sums.push_back(s);
+  } catch (const std::exception&) {
+    std::cerr << "Error during sum processing\n";
+    return 1;
   } catch (...) {
     std::cerr << "Something went wrong\n";
     return 1;
   }
 
-  Iter<int> sms = sums.begin();
-  for (size_t i = 0; i < nums.size(); ++i) {
-    std::cout << *sms;
-    if (i != nums.size() - 1) std::cout << " ";
-    else std::cout << "\n";
-    ++sms;
+  bool first_sum = true;
+  for (auto it = sums.cbegin(); it != sums.cend(); ++it) {
+    if (!first_sum) std::cout << " ";
+    std::cout << *it;
+    first_sum = false;
   }
+  std::cout << "\n";
 
   return 0;
 }
