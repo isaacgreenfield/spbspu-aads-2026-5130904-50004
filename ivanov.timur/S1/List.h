@@ -212,7 +212,7 @@ public:
         Elem* curr = pos.ptr;
         if (curr == nullptr)
             throw std::out_of_range("cannot insert in nullptr");
-        Elem* nw = new Elem(value, curr->next);
+        Elem* nw = new Elem(std::move(value), curr->next);
         curr->next = nw;
         if (curr == tail) {
             tail = nw;
