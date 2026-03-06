@@ -1,11 +1,13 @@
-#include<iostream>
+#include <iostream>
+#include <string>
+#include <cctype>
 #include "List.h"
 
 using namespace ivanov;
 
 int main() {
   List<std::string> names;
-  List<List<int>> nums;
+  List<List<unsigned long long>> nums;
 
   std::string token;
   char c;
@@ -16,15 +18,18 @@ int main() {
       if (!token.empty()) {
         if (is_new_line) {
           names.push_back(token);
-          nums.push_back(List<int>());
+          nums.push_back(List<unsigned long long>());
           is_new_line = false;
         } else {
           try {
             size_t pos;
-            int val = std::stoi(token, &pos);
+            unsigned long long val = std::stoull(token, &pos);
             if (pos == token.length()) {
               nums.back().push_back(val);
             }
+          } catch (const std::out_of_range&) {
+            std::cerr << "Overflow\n";
+            return 1;
           } catch (const std::exception&) {
           }
         }
@@ -41,22 +46,27 @@ int main() {
   if (!token.empty()) {
     if (is_new_line) {
       names.push_back(token);
-      nums.push_back(List<int>());
+      nums.push_back(List<unsigned long long>());
     } else {
       try {
         size_t pos;
-        int val = std::stoi(token, &pos);
+        unsigned long long val = std::stoull(token, &pos);
         if (pos == token.length()) {
           nums.back().push_back(val);
         }
+      } catch (const std::out_of_range&) {
+        std::cerr << "Overflow\n";
+        return 1;
       } catch (const std::exception&) {
       }
     }
   }
 
   if (names.empty()) {
+    std::cout << "0\n";
     return 0;
   }
+
   bool first_name = true;
   for (auto it = names.cbegin(); it != names.cend(); ++it) {
     if (!first_name) std::cout << " ";
@@ -73,18 +83,19 @@ int main() {
   }
 
   if (max_size == 0) {
+    std::cout << "0\n";
     return 0;
   }
 
-  List<int> sums;
-  List<CIter<int>> iters;
+  List<unsigned long long> sums;
+  List<CIter<unsigned long long>> iters;
   for (auto it = nums.cbegin(); it != nums.cend(); ++it) {
     iters.push_back(it->cbegin());
   }
 
   try {
     for (size_t col = 0; col < max_size; ++col) {
-      int current_sum = 0;
+      unsigned long long current_sum = 0;
       bool first_in_row = true;
 
       if (!iters.empty()) {

@@ -195,6 +195,7 @@ namespace ivanov {
       sz++;
     };
     void pop_front() {
+      if (empty()) return;
       if (head == tail) {
         delete head;
         head = nullptr;
@@ -228,6 +229,7 @@ namespace ivanov {
       sz++;
     };
     void pop_back() {
+      if (empty()) return;
       if (head == tail) {
         delete head;
         head = nullptr;
@@ -284,9 +286,10 @@ namespace ivanov {
     };
   };
 
-  inline void sum(int& a, int b) {
-    if (std::numeric_limits<int>::max() - b < a) {
-      throw std::logic_error("Target exceeds numeric limits");
+  template <typename T>
+  inline void sum(T& a, const T& b) {
+    if (std::numeric_limits<T>::max() - b < a) {
+      throw std::overflow_error("Target exceeds numeric limits");
     }
     a += b;
   }
