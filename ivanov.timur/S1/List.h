@@ -135,12 +135,48 @@ public:
         return tail->data;
     };
 
-    void push_front(const T& value);
-    void push_front(T&& value);
-    void pop_front();
-    void push_back(const T& value);
-    void push_back(T&& value);
-    void pop_back();
+    void push_front(const T& value) {
+        Elem* nw = new Elem(value, head);
+        head = nw;
+    };
+    void push_front(T&& value) {
+        Elem* nw = new Elem(value, head);
+        head = nw;
+    };
+    void pop_front() {
+        if (head == tail) {
+            delete head;
+            head = nullptr;
+            tail = nullptr;
+        } else {
+            Elem* tmp = head->next;
+            delete head;
+            head = tmp;
+        }
+    };
+
+    void push_back(const T& value) {
+        tail->next = new Elem(value);
+        tail = tail->next;
+    };
+    void push_back(T&& value) {
+        tail->next = new Elem(value);
+        tail = tail->next;
+    };
+    void pop_back() {
+        if (head == tail) {
+            delete head;
+            head = nullptr;
+            tail = nullptr;
+        } else {
+            Elem* tmp = head;
+            while (tmp->next != tail) tmp = tmp->next;
+            tmp->next = nullptr;
+            delete tail;
+            tail = tmp;
+        }
+    };
+
     Iter<T> insert_after(Iter<T> pos, const T& value);
     Iter<T> insert_after(Iter<T> pos, T&& value);
     Iter<T> erase_after(Iter<T> pos);
