@@ -27,9 +27,6 @@ int main() {
             if (pos == token.length()) {
               nums.back().push_back(val);
             }
-          } catch (const std::overflow_error& e) {
-            std::cerr << "damn\n";
-            return 1;
           } catch (std::exception&) {
           }
         }
