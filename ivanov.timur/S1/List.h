@@ -282,9 +282,8 @@ namespace ivanov {
     };
   };
 
-  template <class T>
-  void sum(size_t& a, size_t b) {
-    if (std::numeric_limits<size_t>::max() - b < a) {
+  inline void sum(int& a, int b) {
+    if (std::numeric_limits<int>::max() - b < a) {
       throw std::logic_error("Target exceeds numeric limits");
     }
     a += b;
