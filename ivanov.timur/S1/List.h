@@ -10,7 +10,7 @@ class Iter {
     friend class List<T>;
 
 public:
-    Iter() noexcept : ptr_(nullptr) {}
+    Iter() noexcept : ptr(nullptr) {}
     Iter(const Iter&) noexcept = default;
     Iter(Iter&&) noexcept = default;
     ~Iter() = default;
@@ -19,27 +19,27 @@ public:
 
 
     T& operator*() const noexcept {
-        return ptr_->data_;
+        return ptr->data_;
     }
     T* operator->() const noexcept {
-        return &(ptr_->data_);
+        return &(ptr->data_);
     }
 
     Iter& operator++() noexcept {
-        ptr_ = ptr_->next_;
+        ptr = ptr->next_;
         return *this;
     }
 
     bool operator==(const Iter& other) const noexcept {
-        return ptr_ == other.ptr_;
+        return ptr == other.ptr;
     }
     bool operator!=(const Iter& other) const noexcept {
-        return ptr_ != other.ptr_;
+        return ptr != other.ptr;
     }
 
 private:
-    typename List<T>::Elem* ptr_;
-    explicit Iter(typename List<T>::Elem* p) noexcept : ptr_(p) {}
+    typename List<T>::Elem* ptr;
+    explicit Iter(typename List<T>::Elem* p) noexcept : ptr(p) {}
 };
 
 template <typename T>
@@ -115,13 +115,25 @@ public:
         return Iter<T>(tail);
     };
 
-    bool empty() const noexcept;
-    size_t size() const noexcept;
+    bool empty() const noexcept {
+        return sz == 0;
+    };
+    size_t size() const noexcept {
+        return sz;
+    };
 
-    T& front();
-    const T& front() const;
-    T& back();
-    const T& back() const;
+    T& front() {
+        return head->data;
+    };
+    const T& front() const {
+        return head->data;
+    };
+    T& back() {
+        return tail->data;
+    };
+    const T& back() const {
+        return tail->data;
+    };
 
     void push_front(const T& value);
     void push_front(T&& value);
