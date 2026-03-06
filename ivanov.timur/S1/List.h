@@ -80,7 +80,7 @@ namespace ivanov {
     explicit CIter(const typename List<T>::Elem* p) noexcept : ptr(p) {}
   };
 
-  template <typename T>
+  template <class T>
   class List {
     friend class Iter<T>;
     friend class CIter<T>;
@@ -286,7 +286,7 @@ namespace ivanov {
     };
   };
 
-  template <typename T>
+  template <class T>
   inline void sum(T& a, const T& b) {
     if (std::numeric_limits<T>::max() - b < a) {
       throw std::overflow_error("Overflow");
