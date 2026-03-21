@@ -83,7 +83,8 @@ inline Integer & Integer::reverse() {
 }
 
 inline Integer & Integer::concatation(const Integer &other) {
-  data = data*10 + other.data;
+  std::string tmp = std::to_string(data) + std::to_string(other.data);
+  data = stoi(tmp);
   return *this;
 }
 
