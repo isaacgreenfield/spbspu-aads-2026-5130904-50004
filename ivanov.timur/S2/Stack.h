@@ -11,6 +11,7 @@ public:
   void push(T rhs);
   T drop();
   bool isEmpty();
+  T& top() { return head->back(); }
 };
 
 template<typename T>
