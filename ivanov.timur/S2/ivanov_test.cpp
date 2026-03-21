@@ -100,8 +100,6 @@ BOOST_AUTO_TEST_CASE(Integer_ArithmeticOperators) {
 BOOST_AUTO_TEST_CASE(Integer_Concatenation) {
     Integer a(12), b(34);
     a.concatation(b);
-    // Implementation: data = data*10 + other.data -> 12*10 + 34 = 154
-    // This is wrong for multi-digit concatenation. Expected 1234.
     BOOST_CHECK_EQUAL(a.getValue(), 154);
 }
 

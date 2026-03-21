@@ -9,8 +9,8 @@
 
 class Object {
 public:
-  char symbol;
-  Object(char c) : symbol(c) {}
+  std::string symbol;
+  Object(std::string c) : symbol(c) {}
   virtual ~Object() = default;
   virtual bool isNumber() const { return false; }
 };
@@ -19,7 +19,7 @@ class Integer : public Object {
   int data;
 
 public:
-  Integer(int d) : Object('\0'), data(d) {}
+  Integer(int d) : Object("\0"), data(d) {}
   virtual bool isNumber() const override { return true; }
   int getValue() const { return data; }
   ~Integer() = default;
@@ -32,7 +32,6 @@ public:
 
   Integer& pow(const Integer& other) noexcept;
   Integer& also(const Integer& other);
-  Integer& reverse();
   Integer& concatation(const Integer& other);
 
   Integer& gcd(const Integer& other);
@@ -74,14 +73,6 @@ inline Integer & Integer::also(const Integer &other) {
   return *this;
 }
 
-inline Integer & Integer::reverse() {
-  std::string rs = std::to_string(data);
-  std::string ns = "";
-  for (int i = rs.size() - 1; i >= 0; ++i) ns+=rs[i];
-  data = stoi(ns);
-  return *this;
-}
-
 inline Integer & Integer::concatation(const Integer &other) {
   std::string tmp = std::to_string(data) + std::to_string(other.data);
   data = stoi(tmp);
@@ -105,20 +96,20 @@ inline Integer & Integer::lcm(const Integer &other) {
   return *this;
 }
 
-int getP(char op) {
+int getP(std::string op) {
   switch (op) {
-    case '+':
-    case '-': return 1;
-    case '*':
-    case '/':
-    case '%': return 2;
-    case '^': return 3;
+    case "+":
+    case "-": return 1;
+    case "*":
+    case "/":
+    case "%": return 2;
+    case "**": return 3;
     default: return 0;
   }
 }
 
-bool ira(char op) {
-  return op == '^';
+bool ira(std::string op) {
+  return op == "**";
 }
 
 ivanov::List<Object*> infixToPostfix(const ivanov::List<Object*>& infix) {
@@ -131,23 +122,24 @@ ivanov::List<Object*> infixToPostfix(const ivanov::List<Object*>& infix) {
   for (Object* obj : infix) {
     if (obj->isNumber()) {
       output.push(obj);
-    } else if (obj->symbol == '(') {
+    } else if (obj->symbol == "(") {
       stack.push(obj);
-    } else if (obj->symbol == ')') {
-      while (!stack.isEmpty() && stack.top()->symbol != '(') {
+    } else if (obj->symbol == ")") {
+      while (!stack.isEmpty() && stack.top()->symbol != "(") {
         output.push(stack.drop());
       }
-      if (!stack.isEmpty() && stack.top()->symbol == '(') {
+      if (!stack.isEmpty() && stack.top()->symbol == "(") {
         delete stack.drop();
       } else {
         throw std::invalid_argument("Mismatched parentheses");
       }
-    } else if (obj->symbol == '+' || obj->symbol == '-' || obj->symbol == '*' ||
-               obj->symbol == '/' || obj->symbol == '%' || obj->symbol == '^') {
+    } else if (obj->symbol == "+" || obj->symbol == "-" || obj->symbol == "*" ||
+               obj->symbol == "/" || obj->symbol == "%" || obj->symbol == "**" ||
+               obj->symbol == "&" || obj->symbol == "&&") {
       int prec = getP(obj->symbol);
       bool rightAssoc = ira(obj->symbol);
-      while (!stack.isEmpty() && stack.top()->symbol != '(') {
-        char topSym = stack.top()->symbol;
+      while (!stack.isEmpty() && stack.top()->symbol != "(") {
+        std::string topSym = stack.top()->symbol;
         int topPrec = getP(topSym);
         if ((rightAssoc && prec < topPrec) || (!rightAssoc && prec <= topPrec)) {
           output.push(stack.drop());
@@ -156,7 +148,9 @@ ivanov::List<Object*> infixToPostfix(const ivanov::List<Object*>& infix) {
         }
       }
       stack.push(obj);
-    }
+               } else {
+                 throw std::invalid_argument("Unknown token: " + obj->symbol);
+               }
   }
 
   while (!stack.isEmpty()) {
@@ -200,35 +194,34 @@ Integer* eval(const ivanov::List<Object*>& line) {
       Integer* right = static_cast<Integer*>(stack.drop());
       Integer* left  = static_cast<Integer*>(stack.drop());
       int resVal = 0;
+
       switch (obj->symbol) {
-        case '+':
-          resVal = left->getValue() + right->getValue();
+        case "+":
+          resVal = (*left + *right).getValue();
           break;
-        case '-':
-          resVal = left->getValue() - right->getValue();
+        case "-":
+          resVal = (*left - *right).getValue();
           break;
-        case '*':
-          resVal = left->getValue() * right->getValue();
+        case "*":
+          resVal = (*left * *right).getValue();
           break;
-        case '/':
+        case "/":
           if (right->getValue() == 0) throw std::runtime_error("Division by zero");
-          resVal = left->getValue() / right->getValue();
+          resVal = (*left / *right).getValue();
           break;
-        case '%':
+        case "%":
           if (right->getValue() == 0) throw std::runtime_error("Modulo by zero");
-          resVal = left->getValue() % right->getValue();
+          resVal = (*left % *right).getValue();
           break;
-        case '^':
-        {
-          int base = left->getValue();
-          int exp = right->getValue();
-          if (exp < 0) throw std::runtime_error("Negative exponent not supported");
-          int powVal = 1;
-          for (int i = 0; i < exp; ++i) {
-            powVal *= base;
-          }
-          resVal = powVal;
-        }
+        case "**":
+          if (right->getValue() < 0) throw std::runtime_error("Negative exponent not supported");
+          resVal = left->pow(*right).getValue();
+          break;
+        case "&":
+          resVal = left->also(*right).getValue();
+          break;
+        case "&&":
+          resVal = left->concatation(*right).getValue();
           break;
         default:
           throw std::invalid_argument("Unknown operator");
