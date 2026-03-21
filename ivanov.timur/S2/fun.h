@@ -2,10 +2,21 @@
 #define FUN_H
 #include<string>
 
-class Integer {
+class Object {
+public:
+  char symbol;
+  Object(char c) : symbol(c) {}
+  virtual ~Object() = default;
+  virtual bool isNumber() const { return false; }
+};
+
+class Integer : public Object {
   int data;
 
-  Integer(int d): data(d) {}
+public:
+  Integer(int d) : Object('\0'), data(d) {}
+  virtual bool isNumber() const override { return true; }
+  int getValue() const { return data; }
   ~Integer() = default;
 
   Integer& operator+(const Integer& other) noexcept;
