@@ -3,18 +3,27 @@
 #include "fun.h"
 
 int main(int argc, char* argv[]) {
-  if (argc < 2) {
-    std::cerr << "Not enough arguments\n";
+  std::istream* input = nullptr;
+  std::ifstream file;
+
+  if (argc == 1) {
+    input = &std::cin;
+  } else if (argc == 2) {
+    file.open(argv[1]);
+    if (!file.is_open()) {
+      std::cerr << "Cannot open file: " << argv[1] << "\n";
+      return 1;
+    }
+    input = &file;
+  } else {
+    std::cerr << "Usage: " << argv[0] << " [input_file]\n";
+    std::cerr << "   no arguments : read from stdin\n";
+    std::cerr << "   one argument : read from file\n";
     return 1;
   }
 
-  std::ifstream file(argv[1]);
-  if (!file.is_open()) {
-    std::cerr << "No file provided\n";
-  }
-
   std::string line;
-  while (std::getline(file, line)) {
+  while (std::getline(*input, line)) {
     ivanov::List<Object*> infixList = stringToInfixList(line);
     ivanov::List<Object*> postfixList;
 
