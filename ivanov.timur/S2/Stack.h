@@ -6,7 +6,7 @@ namespace ivanov {
   class Stack {
     ivanov::List<T>* head;
   public:
-    Stack(ivanov::List<T>* nwh) noexcept;
+    Stack(ivanov::List<T>* nwh);
     ~Stack() = default;
     void push(T rhs);
     T drop();

@@ -13,35 +13,35 @@ namespace ivanov {
     friend class List<T>;
 
   public:
-    Iter() noexcept : ptr(nullptr) {}
-    Iter(const Iter&) noexcept = default;
-    Iter(Iter&&) noexcept = default;
+    Iter()  : ptr(nullptr) {}
+    Iter(const Iter&)  = default;
+    Iter(Iter&&)  = default;
     ~Iter() = default;
-    Iter& operator=(const Iter&) noexcept = default;
-    Iter& operator=(Iter&&) noexcept = default;
+    Iter& operator=(const Iter&)  = default;
+    Iter& operator=(Iter&&)  = default;
 
-    T& operator*() const noexcept {
+    T& operator*() const  {
       return ptr->data;
     }
-    T* operator->() const noexcept {
+    T* operator->() const  {
       return &(ptr->data);
     }
 
-    Iter& operator++() noexcept {
+    Iter& operator++()  {
       ptr = ptr->next;
       return *this;
     }
 
-    bool operator==(const Iter& other) const noexcept {
+    bool operator==(const Iter& other) const  {
       return ptr == other.ptr;
     }
-    bool operator!=(const Iter& other) const noexcept {
+    bool operator!=(const Iter& other) const  {
       return ptr != other.ptr;
     }
 
   private:
     typename List<T>::Elem* ptr;
-    explicit Iter(typename List<T>::Elem* p) noexcept : ptr(p) {}
+    explicit Iter(typename List<T>::Elem* p)  : ptr(p) {}
   };
 
   template <class T>
@@ -49,35 +49,35 @@ namespace ivanov {
     friend class List<T>;
 
   public:
-    CIter() noexcept : ptr(nullptr) {}
-    CIter(const CIter&) noexcept = default;
-    CIter(CIter&&) noexcept = default;
+    CIter()  : ptr(nullptr) {}
+    CIter(const CIter&)  = default;
+    CIter(CIter&&)  = default;
     ~CIter() = default;
-    CIter& operator=(const CIter&) noexcept = default;
-    CIter& operator=(CIter&&) noexcept = default;
+    CIter& operator=(const CIter&)  = default;
+    CIter& operator=(CIter&&)  = default;
 
-    const T& operator*() const noexcept {
+    const T& operator*() const  {
       return ptr->data;
     }
-    const T* operator->() const noexcept {
+    const T* operator->() const  {
       return &(ptr->data);
     }
 
-    CIter& operator++() noexcept {
+    CIter& operator++()  {
       ptr = ptr->next;
       return *this;
     }
 
-    bool operator==(const CIter& other) const noexcept {
+    bool operator==(const CIter& other) const  {
       return ptr == other.ptr;
     }
-    bool operator!=(const CIter& other) const noexcept {
+    bool operator!=(const CIter& other) const  {
       return ptr != other.ptr;
     }
 
   private:
     const typename List<T>::Elem* ptr;
-    explicit CIter(const typename List<T>::Elem* p) noexcept : ptr(p) {}
+    explicit CIter(const typename List<T>::Elem* p)  : ptr(p) {}
   };
 
   template <class T>
@@ -97,7 +97,7 @@ namespace ivanov {
     size_t sz;
 
   public:
-    List() noexcept : head(nullptr), tail(nullptr), sz(0) {}
+    List()  : head(nullptr), tail(nullptr), sz(0) {}
 
     ~List() {
       clear();
@@ -109,7 +109,7 @@ namespace ivanov {
       }
     }
 
-    List(List&& other) noexcept : head(other.head), tail(other.tail), sz(other.sz) {
+    List(List&& other)  : head(other.head), tail(other.tail), sz(other.sz) {
       other.head = nullptr;
       other.tail = nullptr;
       other.sz = 0;
@@ -123,7 +123,7 @@ namespace ivanov {
       return *this;
     }
 
-    List& operator=(List&& other) noexcept {
+    List& operator=(List&& other)  {
       if (this != &other) {
         clear();
         head = other.head;
@@ -136,7 +136,7 @@ namespace ivanov {
       return *this;
     }
 
-    void swap(List& other) noexcept {
+    void swap(List& other)  {
       Elem *tmp_head = head;
       Elem *tmp_tail = tail;
       size_t tmp_sz = sz;
@@ -148,24 +148,24 @@ namespace ivanov {
       other.sz = tmp_sz;
     }
 
-    Iter<T> begin() const noexcept {
+    Iter<T> begin() const  {
       return Iter<T>(head);
     };
-    Iter<T> end() const noexcept {
+    Iter<T> end() const  {
       return Iter<T>(nullptr);
     };
 
-    CIter<T> cbegin() const noexcept {
+    CIter<T> cbegin() const  {
       return CIter<T>(head);
     }
-    CIter<T> cend() const noexcept {
+    CIter<T> cend() const  {
       return CIter<T>(nullptr);
     }
 
-    bool empty() const noexcept {
+    bool empty() const  {
       return sz == 0;
     };
-    size_t size() const noexcept {
+    size_t size() const  {
       return sz;
     };
 

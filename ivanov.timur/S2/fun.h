@@ -24,13 +24,13 @@ public:
   int getValue() const { return data; }
   ~Integer() = default;
 
-  Integer& operator+(const Integer& other) noexcept;
-  Integer& operator-(const Integer& other) noexcept;
-  Integer& operator*(const Integer& other) noexcept;
-  Integer& operator/(const Integer& other) noexcept;
-  Integer& operator%(const Integer& other) noexcept;
+  Integer& operator+(const Integer& other);
+  Integer& operator-(const Integer& other) ;
+  Integer& operator*(const Integer& other) ;
+  Integer& operator/(const Integer& other) ;
+  Integer& operator%(const Integer& other) ;
 
-  Integer& pow(const Integer& other) noexcept;
+  Integer& pow(const Integer& other) ;
   Integer& also(const Integer& other);
   Integer& concatation(const Integer& other);
 
@@ -58,12 +58,12 @@ inline Integer & Integer::operator/(const Integer &other) {
   return *this;
 }
 
-inline Integer & Integer::operator%(const Integer &other) noexcept {
+inline Integer & Integer::operator%(const Integer &other)  {
   if (other.data != 0) data = data%other.data;
   return *this;
 }
 
-inline Integer & Integer::pow(const Integer &other) noexcept {
+inline Integer & Integer::pow(const Integer &other)  {
   for (int i = 0; i < other.data; ++i) data *= data;
   return *this;
 }
