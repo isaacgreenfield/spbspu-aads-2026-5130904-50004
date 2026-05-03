@@ -3,8 +3,8 @@
 #include <vector>
 #include "fun.h"
 
-int main(int argc, char* argv[]) {
-  std::istream* input = nullptr;
+int main(int argc, char *argv[]) {
+  std::istream *input = nullptr;
   std::ifstream file;
 
   if (argc == 1) {
@@ -26,30 +26,30 @@ int main(int argc, char* argv[]) {
   while (std::getline(*input, line)) {
     if (line.empty()) continue;
 
-    ivanov::List<Object*> infixList = stringToInfixList(line);
-    ivanov::List<Object*> postfixList;
+    ivanov::List<Object *> infixList = stringToInfixList(line);
+    ivanov::List<Object *> postfixList;
 
     try {
       postfixList = infixToPostfix(infixList);
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
       std::cerr << "Conversion error: " << e.what() << "\n";
-      for (Object* obj : infixList) delete obj;
+      for (Object *obj: infixList) delete obj;
       return 1;
     }
 
-    Integer* result = nullptr;
+    Integer *result = nullptr;
     try {
       result = eval(postfixList);
       results.push_back(result->getValue());
       delete result;
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
       std::cerr << "Evaluation error: " << e.what() << "\n";
       delete result;
-      for (Object* obj : postfixList) delete obj;
+      for (Object *obj: postfixList) delete obj;
       return 1;
     }
 
-    for (Object* obj : postfixList) delete obj;
+    for (Object *obj: postfixList) delete obj;
   }
   for (auto it = results.rbegin(); it != results.rend(); ++it) {
     std::cout << *it;

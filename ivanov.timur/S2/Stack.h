@@ -1,17 +1,24 @@
 #ifndef STACK_H
 #define STACK_H
 #include "List.h"
+
 namespace ivanov {
-  template <typename T>
+  template<typename T>
   class Stack {
-    ivanov::List<T>* head;
+    ivanov::List<T> *head;
+
   public:
-    Stack(ivanov::List<T>* nwh);
+    Stack(ivanov::List<T> *nwh);
+
     ~Stack() = default;
+
     void push(T rhs);
+
     T drop();
+
     bool isEmpty();
-    T& top() { return head->back(); }
+
+    T &top() { return head->back(); }
   };
 
   template<typename T>
@@ -30,7 +37,8 @@ namespace ivanov {
   }
 
   template<typename T>
-  Stack<T>::Stack(ivanov::List<T>* nwh): head(nwh) {}
+  Stack<T>::Stack(ivanov::List<T> *nwh): head(nwh) {
+  }
 
   template<typename T>
   void Stack<T>::push(T rhs) {

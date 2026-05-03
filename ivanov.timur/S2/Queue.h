@@ -1,15 +1,21 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 #include "List.h"
+
 namespace ivanov {
-  template <typename T>
+  template<typename T>
   class Queue {
-    ivanov::List<T>* head;
+    ivanov::List<T> *head;
+
   public:
-    Queue(ivanov::List<T>* nwh);
+    Queue(ivanov::List<T> *nwh);
+
     ~Queue() = default;
-    void push (T rhs);
+
+    void push(T rhs);
+
     T drop();
+
     bool isEmpty();
   };
 
@@ -19,7 +25,8 @@ namespace ivanov {
   }
 
   template<typename T>
-  Queue<T>::Queue(ivanov::List<T> *nwh): head(nwh) {}
+  Queue<T>::Queue(ivanov::List<T> *nwh): head(nwh) {
+  }
 
   template<typename T>
   T Queue<T>::drop() {

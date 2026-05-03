@@ -2,15 +2,15 @@
 #include <stdexcept>
 #include "Queue.h"
 
-BOOST_AUTO_TEST_SUITE(QueueSuite)
+BOOST_AUTO_TEST_SUITE (QueueSuite)
 
-BOOST_AUTO_TEST_CASE(Queue_IsEmptyInitially) {
+BOOST_AUTO_TEST_CASE (Queue_IsEmptyInitially) {
   ivanov::List<int> list;
   ivanov::Queue<int> queue(&list);
   BOOST_CHECK(queue.isEmpty());
 }
 
-BOOST_AUTO_TEST_CASE(Queue_PushAndDrop) {
+BOOST_AUTO_TEST_CASE (Queue_PushAndDrop) {
   ivanov::List<int> list;
   ivanov::Queue<int> queue(&list);
   queue.push(10);
@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(Queue_PushAndDrop) {
   BOOST_CHECK(queue.isEmpty());
 }
 
-BOOST_AUTO_TEST_CASE(Queue_DropEmptyThrows) {
+BOOST_AUTO_TEST_CASE (Queue_DropEmptyThrows) {
   ivanov::List<int> list;
   ivanov::Queue<int> queue(&list);
   BOOST_CHECK_THROW(queue.drop(), std::logic_error);
