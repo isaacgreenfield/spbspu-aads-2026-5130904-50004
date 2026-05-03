@@ -56,7 +56,6 @@ int main(int argc, char* argv[]) {
       std::cerr << "Evaluation error\n";
     }
 
-    for (Object* obj : infixList) delete obj;
     for (Object* obj : postfixList) delete obj;
     std::cout << "\n";
   }

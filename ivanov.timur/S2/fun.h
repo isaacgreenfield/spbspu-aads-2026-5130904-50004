@@ -133,6 +133,7 @@ inline ivanov::List<Object*> infixToPostfix(const ivanov::List<Object*>& infix) 
       } else {
         throw std::invalid_argument("Mismatched parentheses");
       }
+      delete obj;
     } else if (obj->symbol == "+" || obj->symbol == "-" || obj->symbol == "*" ||
                obj->symbol == "/" || obj->symbol == "%" || obj->symbol == "**" ||
                obj->symbol == "&" || obj->symbol == "&&") {
