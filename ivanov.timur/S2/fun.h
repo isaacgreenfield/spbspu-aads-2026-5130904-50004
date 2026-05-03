@@ -263,7 +263,6 @@ inline Integer* eval(const ivanov::List<Object*>& line) {
         } else {
             Integer* right = static_cast<Integer*>(stack.drop());
             Integer* left  = static_cast<Integer*>(stack.drop());
-            int resVal = 0;
 
             try {
                 switch (obj->symbol[0]) {
