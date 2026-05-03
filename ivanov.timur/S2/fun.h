@@ -24,6 +24,7 @@ public:
   int getValue() const { return data; }
   ~Integer() = default;
 
+
   Integer& operator+(const Integer& other);
   Integer& operator-(const Integer& other) ;
   Integer& operator*(const Integer& other) ;
