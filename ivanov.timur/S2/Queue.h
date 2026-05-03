@@ -35,9 +35,14 @@ namespace ivanov {
   void Queue<T>::push(T rhs) {
     if (!isEmpty()) head->push_back(rhs);
     else {
-      head = new ivanov::List<T>();
-      head->push_back(rhs);
-      head->pop_front();
+      try {
+        ivanov::List<T>* h = new ivanov::List<T>();
+        h->push_back(rhs);
+        h->pop_front();
+        head = h;
+      } catch (...) {
+        throw;
+      }
     }
   }
 }
