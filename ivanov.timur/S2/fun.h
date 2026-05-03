@@ -96,7 +96,7 @@ inline Integer & Integer::lcm(const Integer &other) {
   return *this;
 }
 
-int getP(std::string op) {
+inline int getP(std::string op) {
   switch (op.data()[0]) {
     case '+': return 1;
     case '*': if (op == "**") return 3; else return 1;
@@ -107,11 +107,11 @@ int getP(std::string op) {
   }
 }
 
-bool ira(std::string op) {
+inline bool ira(std::string op) {
   return op == "**";
 }
 
-ivanov::List<Object*> infixToPostfix(const ivanov::List<Object*>& infix) {
+inline ivanov::List<Object*> infixToPostfix(const ivanov::List<Object*>& infix) {
   ivanov::List<Object*> stackList;
   ivanov::Stack<Object*> stack(&stackList);
 
@@ -163,7 +163,7 @@ ivanov::List<Object*> infixToPostfix(const ivanov::List<Object*>& infix) {
   return outputList;
 }
 
-ivanov::List<Object*> stringToInfixList(const std::string& expr) {
+inline ivanov::List<Object*> stringToInfixList(const std::string& expr) {
   ivanov::List<Object*> result;
   for (size_t i = 0; i < expr.size(); ++i) {
     char c = expr[i];
@@ -182,7 +182,7 @@ ivanov::List<Object*> stringToInfixList(const std::string& expr) {
   return result;
 }
 
-Integer* eval(const ivanov::List<Object*>& line) {
+inline Integer* eval(const ivanov::List<Object*>& line) {
   ivanov::List<Object*> stackList;
   ivanov::Stack<Object*> stack(&stackList);
 
