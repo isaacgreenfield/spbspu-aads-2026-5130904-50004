@@ -160,9 +160,7 @@ inline Integer& Integer::gcd(const Integer& other) {
 }
 
 inline Integer& Integer::lcm(const Integer& other) {
-    long long g = std::abs(data);
-    long long o = std::abs(other.data);
-    data = (data / g) * o;
+    data = (data / gcd(other.data).getValue()) * other.data;
     return *this;
 }
 
@@ -257,54 +255,61 @@ inline Integer* eval(const ivanov::List<Object*>& line) {
     ivanov::List<Object*> stackList;
     ivanov::Stack<Object*> stack(&stackList);
 
-    for (Object* obj : line) {
-        if (obj->isNumber()) {
-            stack.push(new Integer(obj->getValue()));
-        } else {
-            Integer* right = static_cast<Integer*>(stack.drop());
-            Integer* left  = static_cast<Integer*>(stack.drop());
+    try {
+        for (Object* obj : line) {
+            if (obj->isNumber()) {
+                stack.push(new Integer(obj->getValue()));
+            } else {
+                Integer* right = static_cast<Integer*>(stack.drop());
+                Integer* left  = static_cast<Integer*>(stack.drop());
 
-            try {
-                switch (obj->symbol[0]) {
-                    case '+': left->operator+(*right); break;
-                    case '-': left->operator-(*right); break;
-                    case '*':
-                        if (obj->symbol == "**") {
-                            left->pow(*right);
-                        } else {
-                            left->operator*(*right);
-                        }
-                        break;
-                    case '/': left->operator/(*right); break;
-                    case '%': left->operator%(*right); break;
-                    case '&':
-                        if (obj->symbol == "&&") {
-                            left->concatation(*right);
-                        } else {
-                            left->also(*right);
-                        }
-                        break;
-                    default:
-                        throw std::invalid_argument("Unknown operator");
+                try {
+                    switch (obj->symbol[0]) {
+                        case '+': left->operator+(*right); break;
+                        case '-': left->operator-(*right); break;
+                        case '*':
+                            if (obj->symbol == "**") {
+                                left->pow(*right);
+                            } else {
+                                left->operator*(*right);
+                            }
+                            break;
+                        case '/': left->operator/(*right); break;
+                        case '%': left->operator%(*right); break;
+                        case '&':
+                            if (obj->symbol == "&&") {
+                                left->concatation(*right);
+                            } else {
+                                left->also(*right);
+                            }
+                            break;
+                        default:
+                            throw std::invalid_argument("Unknown operator");
+                    }
+                } catch (...) {
+                    delete left;
+                    delete right;
+                    throw;
                 }
-            } catch (...) {
-                delete left;
+
                 delete right;
-                throw;
+                stack.push(left);
             }
-
-            delete right;
-            stack.push(left);
         }
-    }
 
-    if (stack.isEmpty())
-        throw std::runtime_error("No result");
-    Integer* finalResult = static_cast<Integer*>(stack.drop());
-    while (!stack.isEmpty()) {
-        delete stack.drop();
+        if (stack.isEmpty())
+            throw std::runtime_error("No result");
+        Integer* finalResult = static_cast<Integer*>(stack.drop());
+        while (!stack.isEmpty()) {
+            delete stack.drop();
+        }
+        return finalResult;
+    } catch (...) {
+        while (!stack.isEmpty()) {
+            delete stack.drop();
+        }
+        throw;
     }
-    return finalResult;
 }
 
 #endif
