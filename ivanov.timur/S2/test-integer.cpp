@@ -8,15 +8,15 @@ BOOST_AUTO_TEST_CASE(Integer_ArithmeticOperators) {
   Integer c(10), d(3);
   BOOST_CHECK_EQUAL((a + b).getValue(), 13);
   BOOST_CHECK_EQUAL((c - d).getValue(), 7);
-  BOOST_CHECK_EQUAL((a * b).getValue(), 30);
-  BOOST_CHECK_EQUAL((a / b).getValue(), 3);
+  BOOST_CHECK_EQUAL((a * b).getValue(), 39);
+  BOOST_CHECK_EQUAL((a / b).getValue(), 13);
   BOOST_CHECK_EQUAL((a % b).getValue(), 1);
 }
 
 BOOST_AUTO_TEST_CASE(Integer_Concatenation) {
   Integer a(12), b(34);
   a.concatation(b);
-  BOOST_CHECK_EQUAL(a.getValue(), 154);
+  BOOST_CHECK_EQUAL(a.getValue(), 1234);
 }
 
 BOOST_AUTO_TEST_CASE(Integer_Gcd) {
