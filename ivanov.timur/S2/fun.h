@@ -97,13 +97,12 @@ inline Integer & Integer::lcm(const Integer &other) {
 }
 
 int getP(std::string op) {
-  switch (op) {
-    case "+":
-    case "-": return 1;
-    case "*":
-    case "/":
-    case "%": return 2;
-    case "**": return 3;
+  switch (op.data()[0]) {
+    case '+': return 1;
+    case '*': if (op == "**") return 3; else return 1;
+    case '-': return 1;
+    case '/': return 1;
+    case '%': return 2;
     default: return 0;
   }
 }
@@ -177,7 +176,7 @@ ivanov::List<Object*> stringToInfixList(const std::string& expr) {
       --i;
       result.push_back(new Integer(num));
     } else if (!std::isspace(c)) {
-      result.push_back(new Object(c));
+      result.push_back(new Object(std::string(1, c)));
     }
   }
   return result;
@@ -195,33 +194,35 @@ Integer* eval(const ivanov::List<Object*>& line) {
       Integer* left  = static_cast<Integer*>(stack.drop());
       int resVal = 0;
 
-      switch (obj->symbol) {
-        case "+":
+      switch (obj->symbol.data()[0]) {
+        case '+':
           resVal = (*left + *right).getValue();
           break;
-        case "-":
+        case '-':
           resVal = (*left - *right).getValue();
           break;
-        case "*":
-          resVal = (*left * *right).getValue();
-          break;
-        case "/":
+        case '/':
           if (right->getValue() == 0) throw std::runtime_error("Division by zero");
           resVal = (*left / *right).getValue();
           break;
-        case "%":
+        case '%':
           if (right->getValue() == 0) throw std::runtime_error("Modulo by zero");
           resVal = (*left % *right).getValue();
           break;
-        case "**":
-          if (right->getValue() < 0) throw std::runtime_error("Negative exponent not supported");
-          resVal = left->pow(*right).getValue();
+        case '*':
+          if (obj->symbol == "**") {
+            if (right->getValue() < 0) throw std::runtime_error("Negative exponent not supported");
+            resVal = left->pow(*right).getValue();
+            break;
+          }
+          resVal = (*left * *right).getValue();
           break;
-        case "&":
+        case '&':
+          if (obj->symbol == "&&") {
+            resVal = left->concatation(*right).getValue();
+            break;
+          }
           resVal = left->also(*right).getValue();
-          break;
-        case "&&":
-          resVal = left->concatation(*right).getValue();
           break;
         default:
           throw std::invalid_argument("Unknown operator");

@@ -33,7 +33,7 @@ namespace ivanov {
 
   template<typename T>
   void Queue<T>::push(T rhs) {
-    if (!isEmpty) head->push_back(rhs);
+    if (!isEmpty()) head->push_back(rhs);
     else {
       head = new ivanov::List<T>();
       head->push_back(rhs);
