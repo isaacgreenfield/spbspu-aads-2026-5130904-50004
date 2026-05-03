@@ -14,7 +14,7 @@ endif
 
 CPPFLAGS += -Wall -Wextra -Werror -Wno-missing-field-initializers -Werror=vla -Wold-style-cast $(if $(BOOST_LOCATION),-isystem $(BOOST_LOCATION))
 CXXFLAGS += -g
-
+LDFLAGS += -lboost_unit_test_framework
 system   := $(shell uname)
 
 ifneq 'MINGW' '$(patsubst MINGW%,MINGW,$(system))'
