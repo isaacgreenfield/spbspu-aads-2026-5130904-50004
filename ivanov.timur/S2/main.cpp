@@ -44,7 +44,6 @@ int main(int argc, char* argv[]) {
     }
 
     for (Object* obj : postfixList) delete obj;
-    std::cout << "\n";
   }
 
   return 0;
