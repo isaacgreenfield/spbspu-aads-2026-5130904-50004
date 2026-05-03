@@ -35,22 +35,9 @@ int main(int argc, char* argv[]) {
       return 1;
     }
 
-    for (auto it = postfixList.begin(); it != postfixList.end(); ++it) {
-      Object* obj = *it;
-      if (obj->isNumber()) {
-        Integer* num = static_cast<Integer*>(obj);
-        std::cout << num->getValue();
-      } else {
-        std::cout << obj->symbol;
-      }
-      auto next = it;
-      ++next;
-      if (next != postfixList.end()) std::cout << ' ';
-    }
-
     try {
       Integer* result = eval(postfixList);
-      std::cout << "Result: " << result->getValue() << '\n';
+      std::cout << result->getValue() << '\n';
       delete result;
     } catch (...) {
       std::cerr << "Evaluation error\n";
