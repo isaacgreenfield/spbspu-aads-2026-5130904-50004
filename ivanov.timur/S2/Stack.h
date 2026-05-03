@@ -34,13 +34,7 @@ namespace ivanov {
 
   template<typename T>
   void Stack<T>::push(T rhs) {
-    if (!isEmpty()) {
-      head->push_back(rhs);
-    }
-    else {
-      head->push_back(rhs);
-      head->pop_front();
-    }
+    head->push_back(rhs);
   }
 }
 #endif //STACK_H
