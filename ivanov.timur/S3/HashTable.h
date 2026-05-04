@@ -26,8 +26,6 @@ class HashTable {
 
   size_t find_insert_slot(const Key &key);
 
-  void rehash_internal(size_t new_cap);
-
 public:
   void add(const Key &key, const Value &value);
 
@@ -35,7 +33,7 @@ public:
 
   Value drop(const Key &key);
 
-  void rehash(size_t new_slots);
+  void rehash(size_t new_cap);
 
   size_t size() const noexcept { return count; }
   size_t capacity() const noexcept { return table.size(); }
@@ -100,7 +98,7 @@ public:
 
 template<class Key, class Value, class Hash, class Equal>
 size_t HashTable<Key, Value, Hash, Equal>::find_slot(const Key &key) const {
-  if (table.empty()) return 0;
+  if (table.empty()) return table.size();
   size_t h = hash(key) % table.size();
   for (size_t i = 0; i < table.size(); ++i) {
     size_t idx = probe(h, i);
@@ -126,7 +124,8 @@ size_t HashTable<Key, Value, Hash, Equal>::find_insert_slot(const Key &key) {
 }
 
 template<class Key, class Value, class Hash, class Equal>
-void HashTable<Key, Value, Hash, Equal>::rehash_internal(size_t new_cap) {
+void HashTable<Key, Value, Hash, Equal>::rehash(size_t new_cap) {
+  new_cap = (new_cap > 16)? new_cap : 16;
   std::vector<Slot> new_table(new_cap);
   for (auto &s: new_table) {
     s.state = 0;
@@ -175,15 +174,20 @@ bool HashTable<Key, Value, Hash, Equal>::has(const Key &key) const {
 
 template<class Key, class Value, class Hash, class Equal>
 Value HashTable<Key, Value, Hash, Equal>::drop(const Key &key) {
-
-}
-
-template<class Key, class Value, class Hash, class Equal>
-void HashTable<Key, Value, Hash, Equal>::rehash(size_t new_slots) {
+  size_t idx = find_slot(key);
+  if (idx == table.size()) {
+    throw std::out_of_range("HashTable::drop: key not found");
+  }
+  Value val = std::move(table[idx].value);
+  table[idx].state = 2;
+  --count;
+  return val;
 }
 
 template<class Key, class Value, class Hash, class Equal>
 void HashTable<Key, Value, Hash, Equal>::clear() noexcept {
+  for (auto &s : table) s.state = 0;
+  count = 0;
 }
 
 #endif
