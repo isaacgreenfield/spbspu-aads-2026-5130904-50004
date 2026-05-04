@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <fstream>
 #include <vector>
 #include <functional>
 #include <sstream>
@@ -116,6 +117,7 @@ namespace ivanov {
   class GraphManager {
   public:
     void execute(const std::string& line, bool silent = false);
+    void loadFromFile(const std::string& filename);
 
   private:
     HashTable<std::string, Graph<std::string, int>, std::hash<std::string>, std::equal_to<std::string>> graphs;
@@ -299,6 +301,39 @@ namespace ivanov {
         if (!silent) std::cout << "<INVALID COMMAND>\n";
     }
 }
+
+  inline void GraphManager::loadFromFile(const std::string &filename) {
+    std::ifstream file(filename);
+    if (!file) {
+      std::cerr << "Error opening file: " << filename << std::endl;
+      std::exit(1);
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+      if (line.empty()) continue;
+
+      std::istringstream iss(line);
+      std::string graphName;
+      std::size_t edgesCount;
+      if (!(iss >> graphName >> edgesCount)) continue;
+
+      Graph<std::string, int> g;
+      for (std::size_t i = 0; i < edgesCount; ++i) {
+        if (!std::getline(file, line) || line.empty()) {
+          break;
+        }
+        std::istringstream edgeIss(line);
+        std::string from, to;
+        int weight;
+        if (edgeIss >> from >> to >> weight) {
+          g.addEdge(from, to, weight);
+        } else {
+        }
+      }
+      graphs.add(graphName, g);
+    }
+  }
 
   inline Graph<std::string, int> GraphManager::mergeGraphs(const Graph<std::string, int> &g1, const Graph<std::string, int> &g2) {
     Graph<std::string, int> res;
