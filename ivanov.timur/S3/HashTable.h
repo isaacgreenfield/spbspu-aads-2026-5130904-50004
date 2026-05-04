@@ -1,6 +1,5 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
-#include <cstddef>
 #include <functional>
 #include <stdexcept>
 #include <vector>
@@ -87,8 +86,8 @@ namespace ivanov {
     const_iterator cbegin() const;
     const_iterator cend() const;
 
-    HashTable();
-    HashTable(const HashTable &other);
+    HashTable(): table(16) {};
+    HashTable(const HashTable &other) = default;
     ~HashTable() = default;
   };
 }
