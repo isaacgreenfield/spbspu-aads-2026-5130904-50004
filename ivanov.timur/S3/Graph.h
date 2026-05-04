@@ -1,11 +1,13 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <iostream>
 #include <cstring>
 #include <vector>
 #include <functional>
+#include <sstream>
 #include <boost/hash2/hash_append.hpp>
-#include <boost/hash2/blake2b.hpp>
+#include <boost/hash2/blake2.hpp>
 #include "HashTable.h"
 
 namespace ivanov {
@@ -136,6 +138,167 @@ namespace ivanov {
     static Graph<std::string, int> mergeGraphs(const Graph<std::string, int>& g1, const Graph<std::string, int>& g2);
     static Graph<std::string, int> extractGraph(const Graph<std::string, int>& g, const std::vector<std::string>& keep);
   };
+
+  inline void GraphManager::execute(const std::string& line, bool silent) {
+    std::istringstream iss(line);
+    std::string cmd;
+    if (!(iss >> cmd)) return;
+
+    if (cmd == "graphs") {
+        if (silent) return;
+        std::vector<std::string> names;
+        for (auto it = graphs.begin(); it != graphs.end(); ++it)
+            names.push_back((*it).first);
+        std::sort(names.begin(), names.end());
+        for (const auto& name : names)
+            std::cout << name << '\n';
+    }
+    else if (cmd == "vertexes") {
+        std::string gname;
+        if (!(iss >> gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (silent) return;
+        Graph<std::string, int>& g = getGraph(gname);
+        std::vector<std::string> sverts = g.vertices;
+        std::sort(sverts.begin(), sverts.end());
+        sverts.erase(std::unique(sverts.begin(), sverts.end()), sverts.end());
+        for (const auto& v : sverts)
+            std::cout << v << '\n';
+    }
+    else if (cmd == "outbound") {
+        std::string gname, v;
+        if (!(iss >> gname >> v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        Graph<std::string, int>& g = getGraph(gname);
+        if (!hasVertex(g, v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (silent) return;
+
+        HashTable<std::string, std::vector<int>,std::hash<std::string>, std::equal_to<std::string>> out;
+        for (auto it = g.edges.begin(); it != g.edges.end(); ++it) {
+            const auto& edge = (*it).first;
+            if (edge.from == v) {
+                const std::string& target = edge.to;
+                if (out.has(target)) {
+                    auto& wv = out.at(target);
+                    const auto& src = (*it).second;
+                    wv.insert(wv.end(), src.begin(), src.end());
+                } else {
+                    out.add(target, (*it).second); // создаём копию вектора весов
+                }
+            }
+        }
+
+        std::vector<std::string> keys;
+        for (auto it = out.begin(); it != out.end(); ++it)
+            keys.push_back((*it).first);
+        std::sort(keys.begin(), keys.end());
+
+        for (const auto& key : keys) {
+            auto& weights = out.at(key);
+            std::sort(weights.begin(), weights.end());
+            std::cout << key;
+            for (int w : weights) std::cout << ' ' << w;
+            std::cout << '\n';
+        }
+    }
+    else if (cmd == "inbound") {
+        std::string gname, v;
+        if (!(iss >> gname >> v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        Graph<std::string, int>& g = getGraph(gname);
+        if (!hasVertex(g, v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (silent) return;
+
+        HashTable<std::string, std::vector<int>,std::hash<std::string>, std::equal_to<std::string>> in;
+        for (auto it = g.edges.begin(); it != g.edges.end(); ++it) {
+            const auto& edge = (*it).first;
+            if (edge.to == v) {
+                const std::string& source = edge.from;
+                if (in.has(source)) {
+                    auto& wv = in.at(source);
+                    const auto& src = (*it).second;
+                    wv.insert(wv.end(), src.begin(), src.end());
+                } else {
+                    in.add(source, (*it).second);
+                }
+            }
+        }
+
+        std::vector<std::string> keys;
+        for (auto it = in.begin(); it != in.end(); ++it)
+            keys.push_back((*it).first);
+        std::sort(keys.begin(), keys.end());
+
+        for (const auto& key : keys) {
+            auto& weights = in.at(key);
+            std::sort(weights.begin(), weights.end());
+            std::cout << key;
+            for (int w : weights) std::cout << ' ' << w;
+            std::cout << '\n';
+        }
+    }
+    else if (cmd == "bind") {
+        std::string gname, from, to;
+        int weight;
+        if (!(iss >> gname >> from >> to >> weight)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        Graph<std::string, int>& g = getGraph(gname);
+        g.addEdge(from, to, weight);
+    }
+    else if (cmd == "cut") {
+        std::string gname, from, to;
+        int weight;
+        if (!(iss >> gname >> from >> to >> weight)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        Graph<std::string, int>& g = getGraph(gname);
+        if (!hasVertex(g, from) || !hasVertex(g, to)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        bool removed = g.removeEdge(from, to, weight);
+        if (!removed && !silent) std::cout << "<INVALID COMMAND>\n";
+    }
+    else if (cmd == "create") {
+        std::string gname;
+        size_t count;
+        if (!(iss >> gname >> count)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        std::vector<std::string> verts(count);
+        for (size_t i = 0; i < count; ++i) {
+            if (!(iss >> verts[i])) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        }
+        Graph<std::string, int> g;
+        g.createFrom(verts);
+        graphs.add(gname, g);
+    }
+    else if (cmd == "merge") {
+        std::string newName, old1, old2;
+        if (!(iss >> newName >> old1 >> old2)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (graphs.has(newName) || !graphs.has(old1) || !graphs.has(old2)) {
+            if (!silent) std::cout << "<INVALID COMMAND>\n"; return;
+        }
+        Graph<std::string, int>& g1 = getGraph(old1);
+        Graph<std::string, int>& g2 = getGraph(old2);
+        Graph<std::string, int> merged = mergeGraphs(g1, g2);
+        graphs.add(newName, merged);
+    }
+    else if (cmd == "extract") {
+        std::string newName, oldName;
+        size_t count;
+        if (!(iss >> newName >> oldName >> count)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (graphs.has(newName) || !graphs.has(oldName)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        Graph<std::string, int>& oldG = getGraph(oldName);
+        std::vector<std::string> keep(count);
+        for (size_t i = 0; i < count; ++i) {
+            if (!(iss >> keep[i])) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        }
+        for (const auto& v : keep) {
+            if (!hasVertex(oldG, v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        }
+        Graph<std::string, int> extracted = extractGraph(oldG, keep);
+        graphs.add(newName, extracted);
+    }
+    else {
+        if (!silent) std::cout << "<INVALID COMMAND>\n";
+    }
+}
 
   inline Graph<std::string, int> GraphManager::mergeGraphs(const Graph<std::string, int> &g1, const Graph<std::string, int> &g2) {
     Graph<std::string, int> res;
