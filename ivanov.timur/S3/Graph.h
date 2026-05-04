@@ -110,6 +110,23 @@ namespace ivanov {
     }
     return false;
   }
+
+  class GraphManager {
+  public:
+    void execute(const std::string& line, bool silent = false);
+
+  private:
+    HashTable<std::string, Graph<std::string, int>, std::hash<std::string>, std::equal_to<std::string>> graphs;
+
+    Graph<std::string, int>& getGraph(const std::string& name) {return graphs.at(name);}
+
+    bool hasVertex(const Graph<std::string, int>& g, const std::string& v) const {
+      return std::find(g.vertices.begin(), g.vertices.end(), v) != g.vertices.end();
+    }
+
+    static Graph<std::string, int> mergeGraphs(const Graph<std::string, int>& g1, const Graph<std::string, int>& g2);
+    static Graph<std::string, int> extractGraph(const Graph<std::string, int>& g, const std::vector<std::string>& keep);
+  };
 }
 
 #endif

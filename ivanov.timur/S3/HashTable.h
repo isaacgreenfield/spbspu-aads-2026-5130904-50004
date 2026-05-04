@@ -40,6 +40,18 @@ namespace ivanov {
 
     void clear() noexcept;
 
+    Value& at(const Key& key) {
+      size_t idx = find_slot(key);
+      if (idx == table.size()) throw std::out_of_range("HashTable::at");
+      return table[idx].value;
+    }
+
+    const Value& at(const Key& key) const {
+      size_t idx = find_slot(key);
+      if (idx == table.size()) throw std::out_of_range("HashTable::at");
+      return table[idx].value;
+    }
+
     class iterator {
       Slot *ptr;
       Slot *end;
