@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "graph.h"
+#include "Graph.h"
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
