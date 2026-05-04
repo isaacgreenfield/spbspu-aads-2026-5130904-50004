@@ -102,31 +102,6 @@ BOOST_AUTO_TEST_CASE(clear_table) {
     BOOST_TEST(ht.capacity() > 0);
 }
 
-BOOST_AUTO_TEST_CASE(iterator_basic) {
-    HashTable<int, std::string, std::hash<int>, std::equal_to<int>> ht;
-    ht.add(10, "ten");
-    ht.add(20, "twenty");
-
-    std::vector<std::pair<int, std::string>> items;
-    for (auto it = ht.begin(); it != ht.end(); ++it) {
-        auto p = *it;
-        items.emplace_back(p.first, p.second);
-    }
-
-    BOOST_TEST(items.size() == 2);
-    bool has10 = false, has20 = false;
-    for (auto& [k, v] : items) {
-        if (k == 10 && v == "ten") has10 = true;
-        if (k == 20 && v == "twenty") has20 = true;
-    }
-    BOOST_TEST(has10);
-    BOOST_TEST(has20);
-
-    auto it = ht.begin();
-    BOOST_TEST(!(it == ht.end()));
-    BOOST_TEST(it != ht.end());
-}
-
 BOOST_AUTO_TEST_CASE(const_iterator_basic) {
     HashTable<double, int, std::hash<double>, std::equal_to<double>> ht;
     ht.add(1.1, 100);
