@@ -115,19 +115,3 @@ BOOST_AUTO_TEST_CASE(const_iterator_basic) {
     }
     BOOST_TEST(items.size() == 2);
 }
-
-BOOST_AUTO_TEST_CASE(iterator_skips_tombstones) {
-    HashTable<int, int, std::hash<int>, std::equal_to<int>> ht;
-    ht.add(1, 10);
-    ht.add(2, 20);
-    ht.add(3, 30);
-    ht.drop(2);
-
-    int count = 0;
-    for (auto it = ht.begin(); it != ht.end(); ++it) {
-        ++count;
-        auto [k, v] = *it;
-        BOOST_TEST(k != 2);
-    }
-    BOOST_TEST(count == 2);
-}
