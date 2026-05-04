@@ -1,0 +1,48 @@
+#ifndef STACK_H
+#define STACK_H
+#include "List.h"
+
+namespace ivanov {
+  template<typename T>
+  class Stack {
+    ivanov::List<T> *head;
+
+  public:
+    Stack(ivanov::List<T> *nwh);
+
+    ~Stack() = default;
+
+    void push(T rhs);
+
+    T drop();
+
+    bool isEmpty();
+
+    T &top() { return head->back(); }
+  };
+
+  template<typename T>
+  bool Stack<T>::isEmpty() {
+    return head->empty();
+  }
+
+  template<typename T>
+  T Stack<T>::drop() {
+    if (!isEmpty()) {
+      T ans = head->back();
+      head->pop_back();
+      return ans;
+    }
+    throw std::logic_error("no elems");
+  }
+
+  template<typename T>
+  Stack<T>::Stack(ivanov::List<T> *nwh): head(nwh) {
+  }
+
+  template<typename T>
+  void Stack<T>::push(T rhs) {
+    head->push_back(rhs);
+  }
+}
+#endif //STACK_H
