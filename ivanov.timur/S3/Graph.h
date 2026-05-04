@@ -37,7 +37,7 @@ namespace ivanov {
   class Graph {
   public:
     std::vector<Key> vertices;
-    HashTable<Edge<Key>, std::vector<Weight>, EdgeHash<Key>, std::equal_to<Edge<Key> > > edges;
+    const HashTable<Edge<Key>, std::vector<Weight>, EdgeHash<Key>, std::equal_to<Edge<Key> > > edges;
 
     void createFrom(const std::vector<Key> &list) {
       vertices = list;
@@ -124,9 +124,46 @@ namespace ivanov {
       return std::find(g.vertices.begin(), g.vertices.end(), v) != g.vertices.end();
     }
 
+    static void addUnique(std::vector<std::string>& vec, const std::string& val) {
+      if (std::find(vec.begin(), vec.end(), val) == vec.end())
+        vec.push_back(val);
+    }
+
+    static bool contains(const std::vector<std::string>& vec, const std::string& val) {
+      return std::find(vec.begin(), vec.end(), val) != vec.end();
+    }
+
     static Graph<std::string, int> mergeGraphs(const Graph<std::string, int>& g1, const Graph<std::string, int>& g2);
     static Graph<std::string, int> extractGraph(const Graph<std::string, int>& g, const std::vector<std::string>& keep);
   };
+
+  inline Graph<std::string, int> GraphManager::mergeGraphs(const Graph<std::string, int> &g1, const Graph<std::string, int> &g2) {
+    Graph<std::string, int> res;
+    for (const auto& v : g1.vertices) addUnique(res.vertices, v);
+    for (const auto& v : g2.vertices) addUnique(res.vertices, v);
+
+    auto addAllEdges = [&](const Graph<std::string, int>& src) {
+      for (auto it = src.edges.begin(); it != src.edges.end(); ++it) {
+        const auto& e = (*it).first;
+        for (size_t w : (*it).second) res.addEdge(e.from, e.to, w);
+      }
+    };
+    addAllEdges(g1);
+    addAllEdges(g2);
+    return res;
+  }
+  inline Graph<std::string, int> GraphManager::extractGraph(const Graph<std::string, int> &g, const std::vector<std::string> &keep) {
+    Graph<std::string, int> res;
+    res.vertices = keep;
+
+    for (const auto it = g.edges.begin(); it != g.edges.end(); ++it) {
+      const auto& e = (*it).first;
+      if (contains(keep, e.from) && contains(keep, e.to)) {
+        for (size_t w : (*it).second) res.addEdge(e.from, e.to, w);
+      }
+    }
+    return res;
+  }
 }
 
 #endif
