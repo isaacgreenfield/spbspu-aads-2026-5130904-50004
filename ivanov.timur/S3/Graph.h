@@ -122,7 +122,7 @@ namespace ivanov {
 
   class GraphManager {
   public:
-    void execute(const std::string& line, bool silent = false, bool& isAnything = false);
+    void execute(const std::string& line, bool& isAnything, bool silent = false);
     void loadFromFile(const std::string& filename);
 
   private:
@@ -147,7 +147,7 @@ namespace ivanov {
     static Graph<std::string, int> extractGraph(const Graph<std::string, int>& g, const std::vector<std::string>& keep);
   };
 
-  inline void GraphManager::execute(const std::string& line, bool silent, bool& isAnything) {
+  inline void GraphManager::execute(const std::string& line, bool& isAnything, bool silent) {
     std::istringstream iss(line);
     std::string cmd;
     if (!(iss >> cmd)) return;
