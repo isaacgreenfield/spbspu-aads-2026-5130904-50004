@@ -174,8 +174,12 @@ namespace ivanov {
         std::vector<std::string> sverts = g.vertices;
         std::sort(sverts.begin(), sverts.end());
         sverts.erase(std::unique(sverts.begin(), sverts.end()), sverts.end());
-        for (auto& v : sverts)
+        bool flag = false;
+        for (auto& v : sverts) {
+            flag = true;
             std::cout << v << '\n';
+        }
+      if(!flag) std::cout << "\n";
     }
     else if (cmd == "outbound") {
         std::string gname, v;
