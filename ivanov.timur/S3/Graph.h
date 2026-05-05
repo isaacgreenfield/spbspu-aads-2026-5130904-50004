@@ -42,7 +42,7 @@ namespace ivanov {
   class Graph {
   public:
     std::vector<Key> vertices;
-    const HashTable<Edge<Key>, std::vector<Weight>, EdgeHash<Key>, std::equal_to<Edge<Key> > > edges;
+    HashTable<Edge<Key>, std::vector<Weight>, EdgeHash<Key>, std::equal_to<Edge<Key> > > edges;
 
     void createFrom(const std::vector<Key> &list) {
       vertices = list;
