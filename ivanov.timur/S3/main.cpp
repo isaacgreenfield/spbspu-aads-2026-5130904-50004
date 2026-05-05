@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
   std::string line;
   while (std::getline(std::cin, line)) {
     if (line.empty()) continue;
-    manager.execute(line, false, isAnything);
+    manager.execute(line, isAnything, false);
   }
   if(!isAnything) std::cout << "\n";
   return 0;
