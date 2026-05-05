@@ -153,7 +153,7 @@ namespace ivanov {
     if (!(iss >> cmd)) return;
 
     if (cmd == "graphs") {
-        if (silent) return;
+        if (silent) { isAnything = true; return; }
         std::vector<std::string> names;
         for (auto it = graphs.begin(); it != graphs.end(); ++it)
             names.push_back((*it).first);
@@ -163,8 +163,8 @@ namespace ivanov {
     }
     else if (cmd == "vertexes") {
         std::string gname;
-        if (!(iss >> gname)) { if (!silent) std::cout << "<INVALID COMMAND>"; isAnything = true; return; }
-        if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>"; isAnything = true; return; }
+        if (!(iss >> gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
+        if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
         if (silent) {isAnything = true; return; }
         Graph<std::string, int>& g = getGraph(gname);
         std::vector<std::string> sverts = g.vertices;
@@ -215,7 +215,7 @@ namespace ivanov {
         if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
         Graph<std::string, int>& g = getGraph(gname);
         if (!hasVertex(g, v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
-        if (silent) return;
+        if (silent) {isAnything = true; return; }
 
         HashTable<std::string, std::vector<int>,std::hash<std::string>, std::equal_to<std::string>> in;
         for (auto it = g.edges.begin(); it != g.edges.end(); ++it) {
