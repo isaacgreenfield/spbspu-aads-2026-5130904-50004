@@ -85,7 +85,7 @@ namespace ivanov {
     Edge<Key> key{from, to};
     if (edges.has(key)) {
       for (auto it = edges.begin(); it != edges.end(); ++it) {
-        auto &pair = *it;
+        auto pair = *it;
         if (pair.first == key) {
           pair.second.push_back(w);
           return;
@@ -101,7 +101,7 @@ namespace ivanov {
     Edge<Key> key{from, to};
     if (!edges.has(key)) return false;
     for (auto it = edges.begin(); it != edges.end(); ++it) {
-      auto &pair = *it;
+      auto pair = *it;
       if (pair.first == key) {
         auto &weights = pair.second;
         auto wIt = std::find(weights.begin(), weights.end(), w);
