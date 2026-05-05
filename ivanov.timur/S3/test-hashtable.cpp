@@ -1,8 +1,9 @@
-#define BOOST_TEST_MODULE HashTableTests
 #include <boost/test/unit_test.hpp>
 #include "HashTable.h"
 #include <string>
 #include <stdexcept>
+
+BOOST_AUTO_TEST_SUITE (HashtableSuite)
 
 using namespace ivanov;
 
