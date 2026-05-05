@@ -209,13 +209,16 @@ namespace ivanov {
             keys.push_back((*it).first);
         std::sort(keys.begin(), keys.end());
 
+        bool flag = false;
         for (auto& key : keys) {
+            flag = true;
             auto& weights = out.at(key);
             std::sort(weights.begin(), weights.end());
             std::cout << key;
             for (int w : weights) std::cout << ' ' << w;
             std::cout << '\n';
         }
+        if(!flag) std::cout << "\n";
     }
     else if (cmd == "inbound") {
         std::string gname, v;
