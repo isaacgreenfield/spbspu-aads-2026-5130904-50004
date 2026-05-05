@@ -82,17 +82,21 @@ namespace ivanov {
 
   template<class Key, class Weight>
   void Graph<Key, Weight>::addEdge(const Key &from, const Key &to, Weight w) {
+    if (std::find(vertices.begin(), vertices.end(), from) == vertices.end())
+        vertices.push_back(from);
+    if (std::find(vertices.begin(), vertices.end(), to) == vertices.end())
+        vertices.push_back(to);
     Edge<Key> key{from, to};
     if (edges.has(key)) {
-      for (auto it = edges.begin(); it != edges.end(); ++it) {
-        auto pair = *it;
-        if (pair.first == key) {
-          pair.second.push_back(w);
-          return;
+        for (auto it = edges.begin(); it != edges.end(); ++it) {
+            auto pair = *it;
+            if (pair.first == key) {
+                pair.second.push_back(w);
+                return;
+            }
         }
-      }
     } else {
-      edges.add(key, {w});
+        edges.add(key, {w});
     }
   }
 
