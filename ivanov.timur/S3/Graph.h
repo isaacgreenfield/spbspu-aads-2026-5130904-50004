@@ -122,7 +122,7 @@ namespace ivanov {
 
   class GraphManager {
   public:
-    void execute(const std::string& line, bool silent = false, bool& isAnything);
+    void execute(const std::string& line, bool silent = false, bool& isAnything = false);
     void loadFromFile(const std::string& filename);
 
   private:
