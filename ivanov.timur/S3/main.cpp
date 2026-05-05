@@ -15,5 +15,6 @@ int main(int argc, char* argv[]) {
     if (line.empty()) continue;
     manager.execute(line, false);
   }
+  std::cout << "\n";
   return 0;
 }
