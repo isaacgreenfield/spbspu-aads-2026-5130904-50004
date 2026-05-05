@@ -1,5 +1,6 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
+
 #include <functional>
 #include <stdexcept>
 #include <vector>
@@ -95,6 +96,8 @@ namespace ivanov {
     iterator begin();
     iterator end();
 
+    const_iterator begin() const { return cbegin(); }
+    const_iterator end() const { return cend(); }
     const_iterator cbegin() const;
     const_iterator cend() const;
 
@@ -202,7 +205,7 @@ void HashTable<Key, Value, Hash, Equal>::clear() noexcept {
 
 template<class Key, class Value, class Hash, class Equal>
 std::pair<const Key &, Value &> HashTable<Key, Value, Hash, Equal>::iterator::operator*() const {
-  return std::make_pair(ptr->key, ptr->value);
+  return { ptr->key, ptr->value };
 }
 
 template<class Key, class Value, class Hash, class Equal>
@@ -214,7 +217,7 @@ typename HashTable<Key, Value, Hash, Equal>::iterator & HashTable<Key, Value, Ha
 
 template<class Key, class Value, class Hash, class Equal>
 std::pair<const Key &, const Value &> HashTable<Key, Value, Hash, Equal>::const_iterator::operator*() const {
-  return std::make_pair(ptr->key, ptr->value);
+  return { ptr->key, ptr->value };
 }
 
 template<class Key, class Value, class Hash, class Equal>
