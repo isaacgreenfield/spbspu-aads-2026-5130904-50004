@@ -103,6 +103,7 @@ namespace ivanov {
 
     HashTable(): table(16) {};
     HashTable(const HashTable &other) = default;
+    HashTable& operator=(const HashTable& other) = default;
     ~HashTable() = default;
   };
 }
