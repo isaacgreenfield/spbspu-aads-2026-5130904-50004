@@ -122,7 +122,7 @@ namespace ivanov {
 
   class GraphManager {
   public:
-    void execute(const std::string& line, bool silent = false);
+    void execute(const std::string& line, bool silent = false, bool& isAnything);
     void loadFromFile(const std::string& filename);
 
   private:
@@ -147,7 +147,7 @@ namespace ivanov {
     static Graph<std::string, int> extractGraph(const Graph<std::string, int>& g, const std::vector<std::string>& keep);
   };
 
-  inline void GraphManager::execute(const std::string& line, bool silent) {
+  inline void GraphManager::execute(const std::string& line, bool silent, bool& isAnything) {
     std::istringstream iss(line);
     std::string cmd;
     if (!(iss >> cmd)) return;
@@ -158,6 +158,7 @@ namespace ivanov {
         for (auto it = graphs.begin(); it != graphs.end(); ++it)
             names.push_back((*it).first);
         std::sort(names.begin(), names.end());
+        isAnything = true;
         for (auto& name : names)
             std::cout << name << '\n';
     }
@@ -170,10 +171,12 @@ namespace ivanov {
         std::vector<std::string> sverts = g.vertices;
         std::sort(sverts.begin(), sverts.end());
         sverts.erase(std::unique(sverts.begin(), sverts.end()), sverts.end());
+        isAnything = true;
         for (auto& v : sverts)
             std::cout << v << '\n';
     }
     else if (cmd == "outbound") {
+        isAnything = true;
         std::string gname, v;
         if (!(iss >> gname >> v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
         if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
@@ -210,6 +213,7 @@ namespace ivanov {
         }
     }
     else if (cmd == "inbound") {
+        isAnything = true;
         std::string gname, v;
         if (!(iss >> gname >> v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
         if (!graphs.has(gname)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
@@ -246,6 +250,7 @@ namespace ivanov {
         }
     }
     else if (cmd == "bind") {
+        isAnything = true;
         std::string gname, from, to;
         int weight;
         if (!(iss >> gname >> from >> to >> weight)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
@@ -254,6 +259,7 @@ namespace ivanov {
         g.addEdge(from, to, weight);
     }
     else if (cmd == "cut") {
+        isAnything = true;
         std::string gname, from, to;
         int weight;
         if (!(iss >> gname >> from >> to >> weight)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
@@ -264,6 +270,7 @@ namespace ivanov {
         if (!removed && !silent) std::cout << "<INVALID COMMAND>\n";
     }
     else if (cmd == "create") {
+        isAnything = true;
         std::string gname;
         size_t count;
         if (!(iss >> gname >> count)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
@@ -277,6 +284,7 @@ namespace ivanov {
         graphs.add(gname, g);
     }
     else if (cmd == "merge") {
+        isAnything = true;
         std::string newName, old1, old2;
         if (!(iss >> newName >> old1 >> old2)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
         if (graphs.has(newName) || !graphs.has(old1) || !graphs.has(old2)) {
@@ -289,6 +297,7 @@ namespace ivanov {
         graphs.add(newName, merged);
     }
     else if (cmd == "extract") {
+        isAnything = true;
         std::string newName, oldName;
         size_t count;
         if (!(iss >> newName >> oldName >> count)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
