@@ -158,8 +158,12 @@ namespace ivanov {
         for (auto it = graphs.begin(); it != graphs.end(); ++it)
             names.push_back((*it).first);
         std::sort(names.begin(), names.end());
-        for (auto& name : names)
+        bool flag = false;
+        for (auto& name : names) {
+            flag = true;
             std::cout << name << '\n';
+        }
+        if(!flag) std::cout << "\n";
     }
     else if (cmd == "vertexes") {
         std::string gname;
