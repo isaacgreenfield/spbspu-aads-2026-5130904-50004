@@ -3,8 +3,10 @@
 #include "Graph.h"
 
 int main(int argc, char* argv[]) {
+  bool isAnything  = false;
   if (argc != 2) {
     std::cerr << "Wrong" << std::endl;
+    std::cout << "\n";
     return 1;
   }
 
@@ -13,8 +15,8 @@ int main(int argc, char* argv[]) {
   std::string line;
   while (std::getline(std::cin, line)) {
     if (line.empty()) continue;
-    manager.execute(line, false);
+    manager.execute(line, false, isAnything);
   }
-  std::cout << "\n";
+  if(!isAnything) std::cout << "\n";
   return 0;
 }
