@@ -103,7 +103,15 @@ namespace ivanov {
 
     HashTable(): table(16) {};
     HashTable(const HashTable &other) = default;
-    HashTable& operator=(const HashTable& other) = default;
+    HashTable& operator=(const HashTable& other) {
+      if (this != &other) {
+          table = other.table;
+          count = other.count;
+          hash  = other.hash;
+          equal = other.equal;
+      }
+      return *this;
+    }
     ~HashTable() = default;
   };
 }
