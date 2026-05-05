@@ -1,13 +1,16 @@
 #ifndef GRAPH_H
 #define GRAPH_H
+
 #include <iostream>
 #include <cstring>
 #include <fstream>
 #include <vector>
 #include <functional>
 #include <sstream>
+#include <algorithm>
 #include <boost/hash2/hash_append.hpp>
 #include <boost/hash2/blake2.hpp>
+#include <boost/hash2/flavor.hpp>
 #include "HashTable.h"
 
 namespace ivanov {
@@ -25,8 +28,8 @@ namespace ivanov {
     size_t operator()(const Edge<Key> &e) const noexcept {
       boost::hash2::blake2b_512 hasher;
 
-      boost::hash2::hash_append(hasher, e.from);
-      boost::hash2::hash_append(hasher, e.to);
+      boost::hash2::hash_append(hasher, boost::hash2::default_flavor{}, e.from);
+      boost::hash2::hash_append(hasher, boost::hash2::default_flavor{}, e.to);
 
       auto digest = hasher.result();
       size_t result = 0;
@@ -63,12 +66,12 @@ namespace ivanov {
 
     std::vector<Edge<Key> > toDelete;
     for (auto edgeIt = edges.begin(); edgeIt != edges.end(); ++edgeIt) {
-      const auto &edge = (*edgeIt).first;
+      auto &edge = (*edgeIt).first;
       if (edge.from == name || edge.to == name) {
         toDelete.push_back(edge);
       }
     }
-    for (const auto &e: toDelete) {
+    for (auto &e: toDelete) {
       if (edges.has(e)) {
         edges.drop(e);
       }
@@ -151,7 +154,7 @@ namespace ivanov {
         for (auto it = graphs.begin(); it != graphs.end(); ++it)
             names.push_back((*it).first);
         std::sort(names.begin(), names.end());
-        for (const auto& name : names)
+        for (auto& name : names)
             std::cout << name << '\n';
     }
     else if (cmd == "vertexes") {
@@ -163,7 +166,7 @@ namespace ivanov {
         std::vector<std::string> sverts = g.vertices;
         std::sort(sverts.begin(), sverts.end());
         sverts.erase(std::unique(sverts.begin(), sverts.end()), sverts.end());
-        for (const auto& v : sverts)
+        for (auto& v : sverts)
             std::cout << v << '\n';
     }
     else if (cmd == "outbound") {
@@ -176,12 +179,12 @@ namespace ivanov {
 
         HashTable<std::string, std::vector<int>,std::hash<std::string>, std::equal_to<std::string>> out;
         for (auto it = g.edges.begin(); it != g.edges.end(); ++it) {
-            const auto& edge = (*it).first;
+            auto& edge = (*it).first;
             if (edge.from == v) {
                 const std::string& target = edge.to;
                 if (out.has(target)) {
                     auto& wv = out.at(target);
-                    const auto& src = (*it).second;
+                    auto& src = (*it).second;
                     wv.insert(wv.end(), src.begin(), src.end());
                 } else {
                     out.add(target, (*it).second); // создаём копию вектора весов
@@ -194,7 +197,7 @@ namespace ivanov {
             keys.push_back((*it).first);
         std::sort(keys.begin(), keys.end());
 
-        for (const auto& key : keys) {
+        for (auto& key : keys) {
             auto& weights = out.at(key);
             std::sort(weights.begin(), weights.end());
             std::cout << key;
@@ -212,12 +215,12 @@ namespace ivanov {
 
         HashTable<std::string, std::vector<int>,std::hash<std::string>, std::equal_to<std::string>> in;
         for (auto it = g.edges.begin(); it != g.edges.end(); ++it) {
-            const auto& edge = (*it).first;
+            auto& edge = (*it).first;
             if (edge.to == v) {
                 const std::string& source = edge.from;
                 if (in.has(source)) {
                     auto& wv = in.at(source);
-                    const auto& src = (*it).second;
+                    auto& src = (*it).second;
                     wv.insert(wv.end(), src.begin(), src.end());
                 } else {
                     in.add(source, (*it).second);
@@ -230,7 +233,7 @@ namespace ivanov {
             keys.push_back((*it).first);
         std::sort(keys.begin(), keys.end());
 
-        for (const auto& key : keys) {
+        for (auto& key : keys) {
             auto& weights = in.at(key);
             std::sort(weights.begin(), weights.end());
             std::cout << key;
@@ -273,7 +276,8 @@ namespace ivanov {
         std::string newName, old1, old2;
         if (!(iss >> newName >> old1 >> old2)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
         if (graphs.has(newName) || !graphs.has(old1) || !graphs.has(old2)) {
-            if (!silent) std::cout << "<INVALID COMMAND>\n"; return;
+            if (!silent){ std::cout << "<INVALID COMMAND>\n"; }
+            return;
         }
         Graph<std::string, int>& g1 = getGraph(old1);
         Graph<std::string, int>& g2 = getGraph(old2);
@@ -290,7 +294,7 @@ namespace ivanov {
         for (size_t i = 0; i < count; ++i) {
             if (!(iss >> keep[i])) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
         }
-        for (const auto& v : keep) {
+        for (auto& v : keep) {
             if (!hasVertex(oldG, v)) { if (!silent) std::cout << "<INVALID COMMAND>\n"; return; }
         }
         Graph<std::string, int> extracted = extractGraph(oldG, keep);
@@ -336,12 +340,12 @@ namespace ivanov {
 
   inline Graph<std::string, int> GraphManager::mergeGraphs(const Graph<std::string, int> &g1, const Graph<std::string, int> &g2) {
     Graph<std::string, int> res;
-    for (const auto& v : g1.vertices) addUnique(res.vertices, v);
-    for (const auto& v : g2.vertices) addUnique(res.vertices, v);
+    for (auto& v : g1.vertices) addUnique(res.vertices, v);
+    for (auto& v : g2.vertices) addUnique(res.vertices, v);
 
     auto addAllEdges = [&](const Graph<std::string, int>& src) {
       for (auto it = src.edges.begin(); it != src.edges.end(); ++it) {
-        const auto& e = (*it).first;
+        auto& e = (*it).first;
         for (size_t w : (*it).second) res.addEdge(e.from, e.to, w);
       }
     };
@@ -353,8 +357,8 @@ namespace ivanov {
     Graph<std::string, int> res;
     res.vertices = keep;
 
-    for (const auto it = g.edges.begin(); it != g.edges.end(); ++it) {
-      const auto& e = (*it).first;
+    for (auto it = g.edges.begin(); it != g.edges.end(); ++it) {
+      auto& e = (*it).first;
       if (contains(keep, e.from) && contains(keep, e.to)) {
         for (size_t w : (*it).second) res.addEdge(e.from, e.to, w);
       }
