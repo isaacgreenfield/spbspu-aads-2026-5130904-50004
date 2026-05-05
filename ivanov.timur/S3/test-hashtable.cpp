@@ -116,3 +116,6 @@ BOOST_AUTO_TEST_CASE(const_iterator_basic) {
     }
     BOOST_TEST(items.size() == 2);
 }
+
+
+BOOST_AUTO_TEST_SUITE_END()
