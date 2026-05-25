@@ -6,14 +6,17 @@
 #include <limits>
 
 namespace ivanov {
-  template <class T> class List;
+  template < class T >
+  class List;
 
-  template <class T>
+  template < class T >
   class Iter {
-    friend class List<T>;
+    friend class List< T >;
 
   public:
-    Iter() noexcept : ptr(nullptr) {}
+    Iter() noexcept
+    : ptr(nullptr) {
+    }
     Iter(const Iter&) noexcept = default;
     Iter(Iter&&) noexcept = default;
     ~Iter() = default;
@@ -40,16 +43,20 @@ namespace ivanov {
     }
 
   private:
-    typename List<T>::Elem* ptr;
-    explicit Iter(typename List<T>::Elem* p) noexcept : ptr(p) {}
+    typename List< T >::Elem* ptr;
+    explicit Iter(typename List< T >::Elem* p) noexcept
+    : ptr(p) {
+    }
   };
 
-  template <class T>
+  template < class T >
   class CIter {
-    friend class List<T>;
+    friend class List< T >;
 
   public:
-    CIter() noexcept : ptr(nullptr) {}
+    CIter() noexcept
+    : ptr(nullptr) {
+    }
     CIter(const CIter&) noexcept = default;
     CIter(CIter&&) noexcept = default;
     ~CIter() = default;
@@ -76,20 +83,26 @@ namespace ivanov {
     }
 
   private:
-    const typename List<T>::Elem* ptr;
-    explicit CIter(const typename List<T>::Elem* p) noexcept : ptr(p) {}
+    const typename List< T >::Elem* ptr;
+    explicit CIter(const typename List< T >::Elem* p) noexcept
+    : ptr(p) {
+    }
   };
 
-  template <class T>
+  template < class T >
   class List {
-    friend class Iter<T>;
-    friend class CIter<T>;
+    friend class Iter< T >;
+    friend class CIter< T >;
   protected:
     struct Elem {
       T data;
       Elem* next;
-      explicit Elem(const T& val, Elem* nxt = nullptr) : data(val), next(nxt) {}
-      explicit Elem(T&& val, Elem* nxt = nullptr) : data(std::move(val)), next(nxt) {}
+      explicit Elem(const T& val, Elem* nxt = nullptr)
+      : data(val), next(nxt) {
+      }
+      explicit Elem(T&& val, Elem* nxt = nullptr)
+      : data(std::move(val)), next(nxt) {
+      }
     };
 
     Elem* head;
@@ -97,13 +110,16 @@ namespace ivanov {
     size_t sz;
 
   public:
-    List() noexcept : head(nullptr), tail(nullptr), sz(0) {}
+    List() noexcept
+    : head(nullptr), tail(nullptr), sz(0) {
+    }
 
     ~List() {
       clear();
     }
 
-    List(const List& other) : head(nullptr), tail(nullptr), sz(0) {
+    List(const List& other)
+    : head(nullptr), tail(nullptr), sz(0) {
       for (Elem* curr = other.head; curr != nullptr; curr = curr->next) {
         push_back(curr->data);
       }
@@ -137,29 +153,23 @@ namespace ivanov {
     }
 
     void swap(List& other) noexcept {
-      Elem *tmp_head = head;
-      Elem *tmp_tail = tail;
-      size_t tmp_sz = sz;
-      head = other.head;
-      tail = other.tail;
-      sz = other.sz;
-      other.head = tmp_head;
-      other.tail = tmp_tail;
-      other.sz = tmp_sz;
+      std::swap(head, other.head);
+      std::swap(tail, other.tail);
+      std::swap(sz, other.sz);
     }
 
-    Iter<T> begin() const noexcept {
-      return Iter<T>(head);
+    Iter< T > begin() const noexcept {
+      return Iter< T >(head);
     };
-    Iter<T> end() const noexcept {
-      return Iter<T>(nullptr);
+    Iter< T > end() const noexcept {
+      return Iter< T >(nullptr);
     };
 
-    CIter<T> cbegin() const noexcept {
-      return CIter<T>(head);
+    CIter< T > cbegin() const noexcept {
+      return CIter< T >(head);
     }
-    CIter<T> cend() const noexcept {
-      return CIter<T>(nullptr);
+    CIter< T > cend() const noexcept {
+      return CIter< T >(nullptr);
     }
 
     bool empty() const noexcept {
@@ -184,18 +194,24 @@ namespace ivanov {
 
     void push_front(const T& value) {
       Elem* nw = new Elem(value, head);
-      if (empty()) tail = nw;
+      if (empty()) {
+        tail = nw;
+      }
       head = nw;
       sz++;
     };
     void push_front(T&& value) {
       Elem* nw = new Elem(std::move(value), head);
-      if (empty()) tail = nw;
+      if (empty()) {
+        tail = nw;
+      }
       head = nw;
       sz++;
     };
     void pop_front() {
-      if (empty()) return;
+      if (empty()) {
+        return;
+      }
       if (head == tail) {
         delete head;
         head = nullptr;
@@ -229,7 +245,9 @@ namespace ivanov {
       sz++;
     };
     void pop_back() {
-      if (empty()) return;
+      if (empty()) {
+        return;
+      }
       if (head == tail) {
         delete head;
         head = nullptr;
@@ -244,41 +262,44 @@ namespace ivanov {
       sz--;
     };
 
-    Iter<T> insert_after(Iter<T> pos, const T& value) {
+    Iter< T > insert_after(Iter< T > pos, const T& value) {
       Elem* curr = pos.ptr;
-      if (curr == nullptr)
+      if (curr == nullptr) {
         throw std::out_of_range("cannot insert in nullptr");
+      }
       Elem* nw = new Elem(value, curr->next);
       curr->next = nw;
       if (curr == tail) {
         tail = nw;
       }
       sz++;
-      return Iter<T>(nw);
+      return Iter< T >(nw);
     };
-    Iter<T> insert_after(Iter<T> pos, T&& value) {
+    Iter< T > insert_after(Iter< T > pos, T&& value) {
       Elem* curr = pos.ptr;
-      if (curr == nullptr)
+      if (curr == nullptr) {
         throw std::out_of_range("cannot insert in nullptr");
+      }
       Elem* nw = new Elem(std::move(value), curr->next);
       curr->next = nw;
       if (curr == tail) {
         tail = nw;
       }
       sz++;
-      return Iter<T>(nw);
+      return Iter< T >(nw);
     };
 
-    Iter<T> erase_after(Iter<T> pos) {
+    Iter< T > erase_after(Iter< T > pos) {
       Elem* curr = pos.ptr;
-      if (curr == nullptr || curr->next == nullptr)
+      if (curr == nullptr || curr->next == nullptr) {
         throw std::out_of_range("cannot erase from nullptr");
+      }
       Elem* tmp = curr->next->next;
       if (curr->next == tail) tail = curr;
       delete curr->next;
       curr->next = tmp;
       sz--;
-      return Iter<T>(curr->next);
+      return Iter< T >(curr->next);
     };
 
     void clear() {
@@ -286,7 +307,7 @@ namespace ivanov {
     };
   };
 
-  template <class T>
+  template < class T >
   inline void sum(T& a, const T& b) {
     if (std::numeric_limits<T>::max() - b < a) {
       throw std::overflow_error("Overflow");
