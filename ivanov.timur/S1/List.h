@@ -22,6 +22,7 @@ namespace ivanov {
       explicit Elem(const T& val, Elem* nxt = nullptr)
       : data(val), next(nxt) {
       }
+
       explicit Elem(T&& val, Elem* nxt = nullptr)
       : data(std::move(val)), next(nxt) {
       }
@@ -88,6 +89,7 @@ namespace ivanov {
     bool empty() const noexcept {
       return sz == 0;
     };
+
     size_t size() const noexcept {
       return sz;
     };
@@ -95,12 +97,15 @@ namespace ivanov {
     T& front() {
       return head->data;
     };
+
     const T& front() const {
       return head->data;
     };
+
     T& back() {
       return tail->data;
     };
+
     const T& back() const {
       return tail->data;
     };
@@ -113,6 +118,7 @@ namespace ivanov {
       head = nw;
       sz++;
     };
+
     void push_front(T&& value) {
       Elem* nw = new Elem(std::move(value), head);
       if (empty()) {
@@ -121,6 +127,7 @@ namespace ivanov {
       head = nw;
       sz++;
     };
+
     void pop_front() {
       if (empty()) {
         return;
@@ -147,6 +154,7 @@ namespace ivanov {
       }
       sz++;
     };
+
     void push_back(T&& value) {
       if (empty()) {
         head = new Elem(std::move(value));
@@ -157,6 +165,7 @@ namespace ivanov {
       }
       sz++;
     };
+
     void pop_back() {
       if (empty()) {
         return;
