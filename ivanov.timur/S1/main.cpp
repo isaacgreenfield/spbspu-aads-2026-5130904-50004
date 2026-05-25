@@ -6,8 +6,8 @@
 using namespace ivanov;
 
 int main() {
-  List<std::string> names;
-  List<List<unsigned long long>> nums;
+  List< std::string > names;
+  List< List< unsigned long long > > nums;
 
   std::string token;
   char c;
@@ -47,7 +47,7 @@ int main() {
   if (!token.empty()) {
     if (is_new_line) {
       names.push_back(token);
-      nums.push_back(List<unsigned long long>());
+      nums.push_back(List< unsigned long long >());
     } else {
       try {
         size_t pos;
@@ -71,7 +71,9 @@ int main() {
 
   bool first_name = true;
   for (auto it = names.cbegin(); it != names.cend(); ++it) {
-    if (!first_name) std::cout << " ";
+    if (!first_name) {
+      std::cout << " ";
+    }
     std::cout << *it;
     first_name = false;
   }
@@ -89,8 +91,8 @@ int main() {
     return 0;
   }
 
-  List<unsigned long long> sums;
-  List<CIter<unsigned long long>> iters;
+  List< unsigned long long > sums;
+  List< CIter< unsigned long long > > iters;
   for (auto it = nums.cbegin(); it != nums.cend(); ++it) {
     iters.push_back(it->cbegin());
   }
@@ -146,11 +148,10 @@ int main() {
     return 1;
   }
 
-  bool first_sum = true;
-  for (auto it = sums.cbegin(); it != sums.cend(); ++it) {
-    if (!first_sum) std::cout << " ";
+  std::cout << *sums.cbegin();
+  for (auto it = ++sums.cbegin(); it != sums.cend(); ++it) {
+    std::cout << " ";
     std::cout << *it;
-    first_sum = false;
   }
   std::cout << "\n";
 
