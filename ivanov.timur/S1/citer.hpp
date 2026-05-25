@@ -2,13 +2,11 @@
 #define CITER_HPP
 
 #include <iterator>
+#include "List.h"
 
 namespace ivanov {
   template < class T >
-  class List;
-
-  template < class T >
-  class CIter : public std::iterator< std::forward_iterator_tag, T, std::ptrdiff_t, const T*, const T& > {
+  class CIter : public std::iterator<std::forward_iterator_tag, T, std::ptrdiff_t, const T*, const T&> {
     friend class List< T >;
 
   public:
@@ -36,7 +34,6 @@ namespace ivanov {
     bool operator==(const CIter& other) const noexcept {
       return ptr == other.ptr;
     }
-
     bool operator!=(const CIter& other) const noexcept {
       return ptr != other.ptr;
     }
@@ -52,15 +49,10 @@ namespace ivanov {
   CIter< T > List< T >::cbegin() const noexcept {
     return CIter< T >(head);
   }
-
   template < class T >
   CIter< T > List< T >::cend() const noexcept {
     return CIter< T >(nullptr);
   }
 }
-
-#ifndef LIST_H
-#include "List.h"
-#endif
 
 #endif
