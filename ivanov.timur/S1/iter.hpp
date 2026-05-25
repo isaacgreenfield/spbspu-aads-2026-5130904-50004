@@ -5,7 +5,7 @@
 
 namespace ivanov {
   template < class T >
-  class Iter : public std::iterator<std::forward_iterator_tag, T> {
+  class Iter : public std::iterator< std::forward_iterator_tag, T > {
     friend class List< T >;
 
   public:
