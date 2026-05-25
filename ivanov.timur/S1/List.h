@@ -7,87 +7,9 @@
 
 namespace ivanov {
   template < class T >
-  class List;
-
+  class Iter;
   template < class T >
-  class Iter {
-    friend class List< T >;
-
-  public:
-    Iter() noexcept
-    : ptr(nullptr) {
-    }
-    Iter(const Iter&) noexcept = default;
-    Iter(Iter&&) noexcept = default;
-    ~Iter() = default;
-    Iter& operator=(const Iter&) noexcept = default;
-    Iter& operator=(Iter&&) noexcept = default;
-
-    T& operator*() const noexcept {
-      return ptr->data;
-    }
-    T* operator->() const noexcept {
-      return &(ptr->data);
-    }
-
-    Iter& operator++() noexcept {
-      ptr = ptr->next;
-      return *this;
-    }
-
-    bool operator==(const Iter& other) const noexcept {
-      return ptr == other.ptr;
-    }
-    bool operator!=(const Iter& other) const noexcept {
-      return ptr != other.ptr;
-    }
-
-  private:
-    typename List< T >::Elem* ptr;
-    explicit Iter(typename List< T >::Elem* p) noexcept
-    : ptr(p) {
-    }
-  };
-
-  template < class T >
-  class CIter {
-    friend class List< T >;
-
-  public:
-    CIter() noexcept
-    : ptr(nullptr) {
-    }
-    CIter(const CIter&) noexcept = default;
-    CIter(CIter&&) noexcept = default;
-    ~CIter() = default;
-    CIter& operator=(const CIter&) noexcept = default;
-    CIter& operator=(CIter&&) noexcept = default;
-
-    const T& operator*() const noexcept {
-      return ptr->data;
-    }
-    const T* operator->() const noexcept {
-      return &(ptr->data);
-    }
-
-    CIter& operator++() noexcept {
-      ptr = ptr->next;
-      return *this;
-    }
-
-    bool operator==(const CIter& other) const noexcept {
-      return ptr == other.ptr;
-    }
-    bool operator!=(const CIter& other) const noexcept {
-      return ptr != other.ptr;
-    }
-
-  private:
-    const typename List< T >::Elem* ptr;
-    explicit CIter(const typename List< T >::Elem* p) noexcept
-    : ptr(p) {
-    }
-  };
+  class CIter;
 
   template < class T >
   class List {
@@ -158,19 +80,10 @@ namespace ivanov {
       std::swap(sz, other.sz);
     }
 
-    Iter< T > begin() const noexcept {
-      return Iter< T >(head);
-    };
-    Iter< T > end() const noexcept {
-      return Iter< T >(nullptr);
-    };
-
-    CIter< T > cbegin() const noexcept {
-      return CIter< T >(head);
-    }
-    CIter< T > cend() const noexcept {
-      return CIter< T >(nullptr);
-    }
+    Iter< T > begin() const noexcept;
+    Iter< T > end() const noexcept;
+    CIter< T > cbegin() const noexcept;
+    CIter< T > cend() const noexcept;
 
     bool empty() const noexcept {
       return sz == 0;
@@ -262,45 +175,9 @@ namespace ivanov {
       sz--;
     };
 
-    Iter< T > insert_after(Iter< T > pos, const T& value) {
-      Elem* curr = pos.ptr;
-      if (curr == nullptr) {
-        throw std::out_of_range("cannot insert in nullptr");
-      }
-      Elem* nw = new Elem(value, curr->next);
-      curr->next = nw;
-      if (curr == tail) {
-        tail = nw;
-      }
-      sz++;
-      return Iter< T >(nw);
-    };
-    Iter< T > insert_after(Iter< T > pos, T&& value) {
-      Elem* curr = pos.ptr;
-      if (curr == nullptr) {
-        throw std::out_of_range("cannot insert in nullptr");
-      }
-      Elem* nw = new Elem(std::move(value), curr->next);
-      curr->next = nw;
-      if (curr == tail) {
-        tail = nw;
-      }
-      sz++;
-      return Iter< T >(nw);
-    };
-
-    Iter< T > erase_after(Iter< T > pos) {
-      Elem* curr = pos.ptr;
-      if (curr == nullptr || curr->next == nullptr) {
-        throw std::out_of_range("cannot erase from nullptr");
-      }
-      Elem* tmp = curr->next->next;
-      if (curr->next == tail) tail = curr;
-      delete curr->next;
-      curr->next = tmp;
-      sz--;
-      return Iter< T >(curr->next);
-    };
+    Iter< T > insert_after(Iter< T > pos, const T& value);
+    Iter< T > insert_after(Iter< T > pos, T&& value);
+    Iter< T > erase_after(Iter< T > pos);
 
     void clear() {
       while (head != nullptr) pop_front();
@@ -315,5 +192,8 @@ namespace ivanov {
     a += b;
   }
 }
+
+#include "iter.hpp"
+#include "citer.hpp"
 
 #endif
