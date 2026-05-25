@@ -2,13 +2,11 @@
 #define ITER_HPP
 
 #include <iterator>
+#include "List.h"
 
 namespace ivanov {
   template < class T >
-  class List;
-
-  template < class T >
-  class Iter : public std::iterator< std::forward_iterator_tag, T > {
+  class Iter : public std::iterator<std::forward_iterator_tag, T> {
     friend class List< T >;
 
   public:
@@ -24,7 +22,6 @@ namespace ivanov {
     T& operator*() const noexcept {
       return ptr->data;
     }
-
     T* operator->() const noexcept {
       return &(ptr->data);
     }
@@ -37,7 +34,6 @@ namespace ivanov {
     bool operator==(const Iter& other) const noexcept {
       return ptr == other.ptr;
     }
-
     bool operator!=(const Iter& other) const noexcept {
       return ptr != other.ptr;
     }
@@ -53,7 +49,6 @@ namespace ivanov {
   Iter< T > List< T >::begin() const noexcept {
     return Iter< T >(head);
   }
-
   template < class T >
   Iter< T > List< T >::end() const noexcept {
     return Iter< T >(nullptr);
@@ -73,7 +68,6 @@ namespace ivanov {
     sz++;
     return Iter< T >(nw);
   }
-
   template < class T >
   Iter< T > List< T >::insert_after(Iter< T > pos, T&& value) {
     Elem* curr = pos.ptr;
@@ -88,7 +82,6 @@ namespace ivanov {
     sz++;
     return Iter< T >(nw);
   }
-
   template < class T >
   Iter< T > List< T >::erase_after(Iter< T > pos) {
     Elem* curr = pos.ptr;
@@ -103,9 +96,5 @@ namespace ivanov {
     return Iter< T >(curr->next);
   }
 }
-
-#ifndef LIST_H
-#include "List.h"
-#endif
 
 #endif
