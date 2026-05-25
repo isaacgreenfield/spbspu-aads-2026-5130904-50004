@@ -10,7 +10,7 @@ using namespace ivanov;
 
 BOOST_AUTO_TEST_CASE(push)
 {
-  List<int> list;
+  List< int > list;
   BOOST_CHECK(list.empty());
 
   list.push_back(10);
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(push)
 
 BOOST_AUTO_TEST_CASE(pop)
 {
-  List<int> list;
+  List< int > list;
   list.push_back(10);
   list.push_front(5);
 
