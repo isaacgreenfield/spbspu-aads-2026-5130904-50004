@@ -101,6 +101,8 @@ namespace ivanov {
   }
 }
 
+#ifndef LIST_H
 #include "List.h"
+#endif
 
 #endif
