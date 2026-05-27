@@ -2,7 +2,7 @@
 #define ITER_HPP
 
 #include <iterator>
-#include "List.h"
+#include "list.hpp"
 
 namespace ivanov {
   template < class T >
