@@ -98,41 +98,32 @@ int main()
   try {
     for (size_t col = 0; col < max_size; ++col) {
       unsigned long long current_sum = 0;
-      bool first_in_row = true;
+      auto iters_it = iters.begin();
+      auto nums_it = nums.cbegin();
+      bool first_elem = true;
 
-      if (!iters.empty()) {
-        auto iters_it = iters.begin();
-        auto nums_it = nums.cbegin();
-
+      for (size_t i = 0; i < iters.size(); ++i) {
         if (*iters_it != nums_it->cend()) {
+          if (!first_elem) {
+            std::cout << " ";
+          }
           std::cout << **iters_it;
           ivanov::sum(current_sum, **iters_it);
           ++(*iters_it);
+          first_elem = false;
         }
-        if (1 < iters.size()) {
-          ++iters_it;
-          ++nums_it;
-        }
-        for (size_t i = 1; i < iters.size(); ++i) {
-          if (*iters_it != nums_it->cend()) {
-            std::cout << " " << **iters_it;
-            ivanov::sum(current_sum, **iters_it);
-            ++(*iters_it);
-          }
-          if (i < iters.size() - 1) {
-            ++iters_it;
-            ++nums_it;
-          }
-        }
+        ++iters_it;
+        ++nums_it;
       }
-
-      if (!first_in_row) {
-        std::cout << "\n";
-        sums.push_back(current_sum);
-      } else {
-        break;
-      }
+      std::cout << "\n";
+      sums.push_back(current_sum);
     }
+
+    std::cout << *sums.cbegin();
+    for (auto it = ++sums.cbegin(); it != sums.cend(); ++it) {
+      std::cout << " " << *it;
+    }
+    std::cout << "\n";
   } catch (const std::overflow_error&) {
     std::cout << "\n";
     std::cerr << "Overflow\n";
@@ -150,12 +141,6 @@ int main()
     std::cerr << "Something went wrong\n";
     return 1;
   }
-
-  std::cout << *sums.cbegin();
-  for (auto it = ++sums.cbegin(); it != sums.cend(); ++it) {
-    std::cout << " " << *it;
-  }
-  std::cout << "\n";
 
   return 0;
 }
