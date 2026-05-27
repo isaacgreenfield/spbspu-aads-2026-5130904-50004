@@ -7,7 +7,7 @@
 
 namespace ivanov
 {
-  template < class T >
+  template< class T >
   class Iter : public std::iterator< std::forward_iterator_tag, T >
   {
     friend class List< T >;
@@ -60,19 +60,19 @@ namespace ivanov
     }
   };
 
-  template < class T >
+  template< class T >
   Iter< T > List< T >::begin() const noexcept
   {
     return Iter< T >(head_);
   }
 
-  template < class T >
+  template< class T >
   Iter< T > List< T >::end() const noexcept
   {
     return Iter< T >(nullptr);
   }
 
-  template < class T >
+  template< class T >
   Iter< T > List< T >::insert_after(const Iter< T > pos, const T& value)
   {
     Elem* curr = pos.ptr_;
@@ -88,7 +88,7 @@ namespace ivanov
     return Iter< T >(nw);
   }
 
-  template < class T >
+  template< class T >
   Iter< T > List< T >::insert_after(const Iter< T > pos, T&& value)
   {
     Elem* curr = pos.ptr_;
@@ -104,7 +104,7 @@ namespace ivanov
     return Iter< T >(nw);
   }
 
-  template < class T >
+  template< class T >
   Iter< T > List< T >::erase_after(const Iter< T > pos)
   {
     Elem* curr = pos.ptr_;
