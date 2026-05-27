@@ -7,12 +7,12 @@
 
 namespace ivanov
 {
-  template < class T >
+  template< class T >
   class Iter;
-  template < class T >
+  template< class T >
   class CIter;
 
-  template < class T >
+  template< class T >
   class List
   {
     friend class Iter< T >;
@@ -233,7 +233,7 @@ namespace ivanov
     }
   };
 
-  template < class T >
+  template< class T >
   void sum(T& a, const T& b)
   {
     if (std::numeric_limits<T>::max() - b < a) {
