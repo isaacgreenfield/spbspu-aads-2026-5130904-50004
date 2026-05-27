@@ -13,8 +13,8 @@ namespace ivanov
     friend class List< T >;
 
   public:
-    CIter() noexcept
-      : ptr_(nullptr)
+    CIter() noexcept:
+      ptr_(nullptr)
     {
     }
 
