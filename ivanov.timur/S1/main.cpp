@@ -1,11 +1,13 @@
 #include <iostream>
 #include <string>
 #include <cctype>
-#include "List.h"
 
-using namespace ivanov;
+#include "list.hpp"
 
-int main() {
+int main()
+{
+  using namespace ivanov;
+
   List< std::string > names;
   List< List< unsigned long long > > nums;
 
@@ -14,15 +16,15 @@ int main() {
   bool is_new_line = true;
 
   while (std::cin.get(c)) {
-    if (std::isspace(static_cast<unsigned char>(c))) {
+    if (std::isspace(static_cast< unsigned char >(c))) {
       if (!token.empty()) {
         if (is_new_line) {
           names.push_back(token);
-          nums.push_back(List<unsigned long long>());
+          nums.push_back(List< unsigned long long >());
           is_new_line = false;
         } else {
           try {
-            size_t pos;
+            size_t pos = 0;
             unsigned long long val = std::stoull(token, &pos);
             if (pos == token.length()) {
               nums.back().push_back(val);
@@ -50,7 +52,7 @@ int main() {
       nums.push_back(List< unsigned long long >());
     } else {
       try {
-        size_t pos;
+        size_t pos = 0;
         unsigned long long val = std::stoull(token, &pos);
         if (pos == token.length()) {
           nums.back().push_back(val);
@@ -71,8 +73,7 @@ int main() {
 
   std::cout << *names.cbegin();
   for (auto it = ++names.cbegin(); it != names.cend(); ++it) {
-    std::cout << " ";
-    std::cout << *it;
+    std::cout << " " << *it;
   }
   std::cout << "\n";
 
@@ -108,18 +109,16 @@ int main() {
           ivanov::sum(current_sum, **iters_it);
           ++(*iters_it);
         }
-        if (1 < iters.size()){
+        if (1 < iters.size()) {
           ++iters_it;
           ++nums_it;
         }
         for (size_t i = 1; i < iters.size(); ++i) {
           if (*iters_it != nums_it->cend()) {
-            std::cout << " ";
-            std::cout << **iters_it;
+            std::cout << " " << **iters_it;
             ivanov::sum(current_sum, **iters_it);
             ++(*iters_it);
           }
-
           if (i < iters.size() - 1) {
             ++iters_it;
             ++nums_it;
@@ -154,8 +153,7 @@ int main() {
 
   std::cout << *sums.cbegin();
   for (auto it = ++sums.cbegin(); it != sums.cend(); ++it) {
-    std::cout << " ";
-    std::cout << *it;
+    std::cout << " " << *it;
   }
   std::cout << "\n";
 
