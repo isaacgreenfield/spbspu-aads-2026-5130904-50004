@@ -24,14 +24,14 @@ namespace ivanov
       T data_;
       Elem* next_;
 
-      explicit Elem(const T& val, Elem* nxt = nullptr)
-        : data_(val),
+      explicit Elem(const T& val, Elem* nxt = nullptr):
+          data_(val),
           next_(nxt)
       {
       }
 
-      explicit Elem(T&& val, Elem* nxt = nullptr)
-        : data_(std::move(val)),
+      explicit Elem(T&& val, Elem* nxt = nullptr):
+          data_(std::move(val)),
           next_(nxt)
       {
       }
@@ -54,8 +54,8 @@ namespace ivanov
       clear();
     }
 
-    List(const List& other)
-      : head_(nullptr),
+    List(const List& other):
+        head_(nullptr),
         tail_(nullptr),
         sz_(0)
     {
@@ -64,8 +64,8 @@ namespace ivanov
       }
     }
 
-    List(List&& other) noexcept
-      : head_(other.head_),
+    List(List&& other) noexcept:
+        head_(other.head_),
         tail_(other.tail_),
         sz_(other.sz_)
     {
