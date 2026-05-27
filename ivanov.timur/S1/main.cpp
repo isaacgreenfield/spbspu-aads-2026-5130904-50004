@@ -69,13 +69,10 @@ int main() {
     return 0;
   }
 
-  bool first_name = true;
-  for (auto it = names.cbegin(); it != names.cend(); ++it) {
-    if (!first_name) {
-      std::cout << " ";
-    }
+  std::cout << *names.cbegin();
+  for (auto it = ++names.cbegin(); it != names.cend(); ++it) {
+    std::cout << " ";
     std::cout << *it;
-    first_name = false;
   }
   std::cout << "\n";
 
@@ -106,13 +103,20 @@ int main() {
         auto iters_it = iters.begin();
         auto nums_it = nums.cbegin();
 
-        for (size_t i = 0; i < iters.size(); ++i) {
+        if (*iters_it != nums_it->cend()) {
+          std::cout << **iters_it;
+          ivanov::sum(current_sum, **iters_it);
+          ++(*iters_it);
+        }
+        if (1 < iters.size()){
+          ++iters_it;
+          ++nums_it;
+        }
+        for (size_t i = 1; i < iters.size(); ++i) {
           if (*iters_it != nums_it->cend()) {
-            if (!first_in_row) std::cout << " ";
+            std::cout << " ";
             std::cout << **iters_it;
             ivanov::sum(current_sum, **iters_it);
-
-            first_in_row = false;
             ++(*iters_it);
           }
 
