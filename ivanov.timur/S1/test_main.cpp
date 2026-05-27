@@ -4,7 +4,7 @@ __attribute__((weak)) int main(int argc, char* argv[]);
 
 #define BOOST_TEST_MODULE ListTests
 #include <boost/test/included/unit_test.hpp>
-#include "List.h"
+#include "list.hpp"
 
 using namespace ivanov;
 
