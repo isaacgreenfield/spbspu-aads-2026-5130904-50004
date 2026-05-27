@@ -7,7 +7,7 @@
 
 namespace ivanov
 {
-  template < class T >
+  template< class T >
   class CIter : public std::iterator< std::forward_iterator_tag, T, std::ptrdiff_t, const T*, const T& >
   {
     friend class List< T >;
@@ -60,13 +60,13 @@ namespace ivanov
     }
   };
 
-  template < class T >
+  template< class T >
   CIter< T > List< T >::cbegin() const noexcept
   {
     return CIter< T >(head_);
   }
 
-  template < class T >
+  template< class T >
   CIter< T > List< T >::cend() const noexcept
   {
     return CIter< T >(nullptr);
