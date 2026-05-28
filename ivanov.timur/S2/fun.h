@@ -13,63 +13,71 @@ class Object {
 public:
   std::string symbol;
 
-  Object(std::string c) : symbol(c) {
-  }
+  Object(std::string c):
+    symbol(c)
+  {}
 
   virtual ~Object() = default;
 
-  virtual bool isNumber() const { return false; }
-  virtual long long getValue() const { return 0; }
+  virtual bool isNumber() const
+  {
+    return false;
+  }
+  virtual long long getValue() const 
+  { 
+    return 0;
+  }
 };
 
-class Integer : public Object {
+class Integer: public Object {
   long long data;
 
 public:
-  Integer(long long d) : Object(""), data(d) {
+  Integer(long long d):
+    Object(""), data(d)
+  {}
+
+  bool isNumber() const override 
+  {
+    return true;
+  }
+  long long getValue() const override 
+  {
+    return data;
   }
 
-  bool isNumber() const override { return true; }
-  long long getValue() const override { return data; }
-
   Integer &operator+(const Integer &other);
-
   Integer &operator-(const Integer &other);
-
   Integer &operator*(const Integer &other);
-
   Integer &operator/(const Integer &other);
-
   Integer &operator%(const Integer &other);
-
   Integer &pow(const Integer &other);
-
   Integer &also(const Integer &other);
-
   Integer &concatation(const Integer &other);
-
   Integer &gcd(const Integer &other);
-
   Integer &lcm(const Integer &other);
 };
 
-inline bool addOverflow(long long a, long long b, long long &res) {
+inline bool addOverflow(long long a, long long b, long long &res)
+{
   if ((b > 0 && a > LLONG_MAX - b) ||
-      (b < 0 && a < LLONG_MIN - b))
+      (b < 0 && a < LLONG_MIN - b)) {
     return true;
+  }
   res = a + b;
   return false;
 }
-
-inline bool subOverflow(long long a, long long b, long long &res) {
+inline bool subOverflow(long long a, long long b, long long &res)
+{
   if ((b < 0 && a > LLONG_MAX + b) ||
-      (b > 0 && a < LLONG_MIN + b))
+      (b > 0 && a < LLONG_MIN + b)) {
     return true;
+  }
   res = a - b;
   return false;
 }
-
-inline bool mulOverflow(long long a, long long b, long long &res) {
+inline bool mulOverflow(long long a, long long b, long long &res)
+{
   if (a == 0 || b == 0) {
     res = 0;
     return false;
@@ -91,79 +99,89 @@ inline bool mulOverflow(long long a, long long b, long long &res) {
   return false;
 }
 
-inline Integer &Integer::operator+(const Integer &other) {
+inline Integer &Integer::operator+(const Integer &other)
+{
   long long res;
-  if (addOverflow(data, other.data, res))
+  if (addOverflow(data, other.data, res)) {
     throw std::overflow_error("Addition overflow");
+  }
   data = res;
   return *this;
 }
-
-inline Integer &Integer::operator-(const Integer &other) {
+inline Integer &Integer::operator-(const Integer &other)
+{
   long long res;
-  if (subOverflow(data, other.data, res))
+  if (subOverflow(data, other.data, res)) {
     throw std::overflow_error("Subtraction overflow");
+  }
   data = res;
   return *this;
 }
-
-inline Integer &Integer::operator*(const Integer &other) {
+inline Integer &Integer::operator*(const Integer &other)
+{
   long long res;
-  if (mulOverflow(data, other.data, res))
+  if (mulOverflow(data, other.data, res)) {
     throw std::overflow_error("Multiplication overflow");
+  }
   data = res;
   return *this;
 }
-
-inline Integer &Integer::operator/(const Integer &other) {
-  if (other.data == 0)
+inline Integer &Integer::operator/(const Integer &other) 
+{
+  if (other.data == 0) {
     throw std::runtime_error("Division by zero");
+  }
   data /= other.data;
   return *this;
 }
-
-inline Integer &Integer::operator%(const Integer &other) {
-  if (other.data == 0)
+inline Integer &Integer::operator%(const Integer &other)
+{
+  if (other.data == 0) {
     throw std::runtime_error("Modulo by zero");
+  }
   data %= other.data;
   if (data < 0) data += std::abs(other.data);
   return *this;
 }
-
-inline Integer &Integer::pow(const Integer &other) {
-  if (other.data < 0)
+inline Integer &Integer::pow(const Integer &other)
+{
+  if (other.data < 0) {
     throw std::runtime_error("Negative exponent not supported");
+  }
   long long base = data;
   long long exp = other.data;
   long long res = 1;
   while (exp > 0) {
     if (exp & 1) {
-      if (mulOverflow(res, base, res))
+      if (mulOverflow(res, base, res)) {
         throw std::overflow_error("Power overflow");
+      }
     }
     exp >>= 1;
     if (exp > 0) {
-      if (mulOverflow(base, base, base))
+      if (mulOverflow(base, base, base)) {
         throw std::overflow_error("Power overflow");
+      }
     }
   }
   data = res;
   return *this;
 }
 
-inline Integer &Integer::also(const Integer &other) {
+inline Integer &Integer::also(const Integer &other)
+{
   data &= other.data;
   return *this;
 }
-
-inline Integer &Integer::concatation(const Integer &other) {
+inline Integer &Integer::concatation(const Integer &other)
+{
   std::string tmp = std::to_string(data) + std::to_string(other.data);
   long long val = std::stoll(tmp);
   data = val;
   return *this;
 }
-
-inline Integer &Integer::gcd(const Integer &other) {
+inline Integer &Integer::gcd(const Integer &other)
+{
   long long a = std::abs(data);
   long long b = std::abs(other.data);
   while (b != 0) {
@@ -174,13 +192,14 @@ inline Integer &Integer::gcd(const Integer &other) {
   data = a;
   return *this;
 }
-
-inline Integer &Integer::lcm(const Integer &other) {
+inline Integer &Integer::lcm(const Integer &other)
+{
   data = (data / gcd(other.data).getValue()) * other.data;
   return *this;
 }
 
-inline int getP(std::string op) {
+inline int getP(std::string op)
+{
   switch (op[0]) {
     case '+': return 1;
     case '*': return (op == "**") ? 3 : 1;
@@ -190,18 +209,17 @@ inline int getP(std::string op) {
     default: return 0;
   }
 }
-
-inline bool ira(std::string op) {
+inline bool ira(std::string op)
+{
   return op == "**";
 }
 
-inline ivanov::List<Object *> infixToPostfix(const ivanov::List<Object *> &infix) {
-  ivanov::List<Object *> stackList;
-  ivanov::Stack<Object *> stack(&stackList);
-
-  ivanov::List<Object *> queueList;
-  ivanov::Queue<Object *> output(&queueList);
-
+inline ivanov::List< Object * > infixToPostfix(const ivanov::List< Object * > &infix)
+{
+  ivanov::List< Object * > stackList;
+  ivanov::Stack< Object * > stack(&stackList);
+  ivanov::List< Object * > queueList;
+  ivanov::Queue< Object * > output(&queueList);
   for (Object *obj: infix) {
     if (obj->isNumber()) {
       output.push(obj);
@@ -240,16 +258,16 @@ inline ivanov::List<Object *> infixToPostfix(const ivanov::List<Object *> &infix
   while (!stack.isEmpty()) {
     output.push(stack.drop());
   }
-
-  ivanov::List<Object *> outputList;
+  ivanov::List< Object * > outputList;
   while (!output.isEmpty()) {
     outputList.push_back(output.drop());
   }
   return outputList;
 }
 
-inline ivanov::List<Object *> stringToInfixList(const std::string &expr) {
-  ivanov::List<Object *> result;
+inline ivanov::List< Object * > stringToInfixList(const std::string &expr)
+{
+  ivanov::List< Object * > result;
   for (size_t i = 0; i < expr.size(); ++i) {
     char c = expr[i];
     if (std::isdigit(c)) {
@@ -266,10 +284,10 @@ inline ivanov::List<Object *> stringToInfixList(const std::string &expr) {
   }
   return result;
 }
-
-inline Integer *eval(const ivanov::List<Object *> &line) {
-  ivanov::List<Object *> stackList;
-  ivanov::Stack<Object *> stack(&stackList);
+inline Integer *eval(const ivanov::List< Object * > &line)
+{
+  ivanov::List< Object * > stackList;
+  ivanov::Stack< Object  * > stack(&stackList);
 
   try {
     for (Object* obj : line) {
@@ -279,8 +297,8 @@ inline Integer *eval(const ivanov::List<Object *> &line) {
         Integer* right = nullptr;
         Integer* left = nullptr;
         try {
-          right = static_cast<Integer*>(stack.drop());
-          left  = static_cast<Integer*>(stack.drop());
+          right = static_cast< Integer * >(stack.drop());
+          left  = static_cast< Integer * >(stack.drop());
 
           switch (obj->symbol[0]) {
             case '+': left->operator+(*right); break;
