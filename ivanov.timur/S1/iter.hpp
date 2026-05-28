@@ -1,8 +1,6 @@
 #ifndef ITER_HPP
 #define ITER_HPP
-
 #include <iterator>
-
 #include "list.hpp"
 
 namespace ivanov
@@ -15,8 +13,7 @@ namespace ivanov
   public:
     Iter() noexcept:
         ptr_(nullptr)
-    {
-    }
+    {}
 
     Iter(const Iter&) noexcept = default;
     Iter(Iter&&) noexcept = default;
@@ -56,8 +53,7 @@ namespace ivanov
 
     explicit Iter(typename List< T >::Elem* p) noexcept
       : ptr_(p)
-    {
-    }
+    {}
   };
 
   template< class T >
