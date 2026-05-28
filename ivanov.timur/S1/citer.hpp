@@ -1,8 +1,6 @@
 #ifndef CITER_HPP
 #define CITER_HPP
-
 #include <iterator>
-
 #include "list.hpp"
 
 namespace ivanov
@@ -56,8 +54,7 @@ namespace ivanov
 
     explicit CIter(const typename List< T >::Elem* p) noexcept
       : ptr_(p)
-    {
-    }
+    {}
   };
 
   template< class T >
