@@ -14,13 +14,15 @@ namespace ivanov {
     bool isEmpty();
   };
   template< typename T >
-  bool Queue< T >::isEmpty() {
+  bool Queue< T >::isEmpty()
+  {
     return head->empty();
   }
   template< typename T >
   Queue< T >::Queue(ivanov::List< T > *nwh): head(nwh) {}
   template< typename T >
-  T Queue< T >::drop() {
+  T Queue< T >::drop()
+  {
     if (!isEmpty()) {
       T ans = head->front();
       head->pop_front();
@@ -29,7 +31,8 @@ namespace ivanov {
     throw std::logic_error("no elems");
   }
   template< typename T >
-  void Queue< T >::push(T rhs) {
+  void Queue< T >::push(T rhs)
+  {
     head->push_back(rhs);
   }
 }
