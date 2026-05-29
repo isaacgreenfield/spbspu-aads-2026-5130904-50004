@@ -9,12 +9,13 @@ int main(int argc, char* argv[]) {
     std::cout << "\n";
     return 1;
   }
-
   ivanov::GraphManager manager;
   manager.loadFromFile(argv[1]);
   std::string line;
   while (std::getline(std::cin, line)) {
-    if (line.empty()) continue;
+    if (line.empty()) {
+      continue;
+    }
     manager.execute(line, isAnything, false);
   }
   return 0;
