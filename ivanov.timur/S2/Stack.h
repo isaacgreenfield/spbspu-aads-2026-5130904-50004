@@ -40,4 +40,4 @@ namespace ivanov {
     head->push_back(rhs);
   }
 }
-#endif //STACK_H
+#endif
