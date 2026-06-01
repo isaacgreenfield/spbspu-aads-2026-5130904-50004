@@ -36,4 +36,4 @@ namespace ivanov {
     head->push_back(rhs);
   }
 }
-#endif //QUEUE_H
+#endif
