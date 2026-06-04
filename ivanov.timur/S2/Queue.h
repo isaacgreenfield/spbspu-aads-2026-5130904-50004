@@ -2,9 +2,11 @@
 #define QUEUE_H
 #include "List.h"
 
-namespace ivanov {
+namespace ivanov
+{
   template< typename T >
-  class Queue {
+  class Queue
+	 {
     ivanov::List< T > *head;
   public:
     Queue(ivanov::List< T > *nwh);
@@ -13,6 +15,7 @@ namespace ivanov {
     T drop();
     bool isEmpty();
   };
+
   template< typename T >
   bool Queue< T >::isEmpty()
   {
