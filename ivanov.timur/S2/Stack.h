@@ -6,7 +6,7 @@ namespace ivanov
 {
   template< typename T >
   class Stack
- {
+  {
     ivanov::List< T > *head;
   public:
     Stack(ivanov::List< T > *nwh);
