@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[]) {
   std::istream *input = nullptr;
-  std::ifstream file;
+  std::ifstream& file;
 
   if (argc == 1) {
     input = &std::cin;
