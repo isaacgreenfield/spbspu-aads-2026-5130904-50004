@@ -2,9 +2,11 @@
 #define STACK_H
 #include "List.h"
 
-namespace ivanov {
+namespace ivanov
+{
   template< typename T >
-  class Stack {
+  class Stack
+ {
     ivanov::List< T > *head;
   public:
     Stack(ivanov::List< T > *nwh);
