@@ -2,10 +2,24 @@
 #include <iostream>
 #include <vector>
 #include "fun.h"
+#include "se-vector.hpp"
+
+bool readLine(std::istream& in, std::string& line) {
+  line.clear();
+  char ch;
+  while (in.get(ch)) {
+    if (ch == '\n') {
+      return true;
+    }
+    line.push_back(ch);
+  }
+  return !line.empty();
+}
 
 int main(int argc, char *argv[]) {
   std::istream *input = nullptr;
-  std::ifstream& file;
+  std::ifstream fileObj;
+  std::ifstream& file = fileObj;
 
   if (argc == 1) {
     input = &std::cin;
@@ -20,10 +34,10 @@ int main(int argc, char *argv[]) {
     std::cerr << "Usage: " << argv[0] << " [input_file]\n";
     return 1;
   }
-  std::vector< long long > results;
+  knk::vector< long long > results;
   std::string line;
 
-  while (std::getline(*input, line)) {
+  while (std::readLine(*input, line)) {
     if (line.empty()) {
       continue;
     }
@@ -44,7 +58,7 @@ int main(int argc, char *argv[]) {
     Integer *result = nullptr;
     try {
       result = eval(postfixList);
-      results.push_back(result->getValue());
+      results.pushBack(result->getValue());
       delete result;
     } catch (const std::exception &e) {
       std::cerr << "Evaluation error: " << e.what() << "\n";
@@ -59,9 +73,9 @@ int main(int argc, char *argv[]) {
       delete obj;
     }
   }
-  for (auto it = results.rbegin(); it != results.rend(); ++it) {
-    std::cout << *it;
-    if (std::next(it) != results.rend()) {
+  for (size_t i = results.getSize(); i > 0; --i) {
+    std::cout << results[i - 1];
+    if (i > 1) {
       std::cout << ' ';
     }
   }
