@@ -6,7 +6,7 @@ namespace ivanov
 {
   template< typename T >
   class Queue
-	 {
+	{
     ivanov::List< T > *head;
   public:
     Queue(ivanov::List< T > *nwh);
