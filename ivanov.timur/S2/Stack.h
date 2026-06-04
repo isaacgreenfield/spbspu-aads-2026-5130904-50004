@@ -35,7 +35,9 @@ namespace ivanov
     throw std::logic_error("no elems");
   }
   template< typename T >
-  Stack< T >::Stack(ivanov::List< T > *nwh): head(nwh) {}
+  Stack< T >::Stack(ivanov::List< T > *nwh):
+  head(nwh)
+  {}
   template< typename T >
   void Stack< T >::push(T rhs)
   {
