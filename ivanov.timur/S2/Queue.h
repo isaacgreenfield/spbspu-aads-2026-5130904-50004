@@ -22,7 +22,9 @@ namespace ivanov
     return head->empty();
   }
   template< typename T >
-  Queue< T >::Queue(ivanov::List< T > *nwh): head(nwh) {}
+  Queue< T >::Queue(ivanov::List< T > *nwh):
+  head(nwh)
+  {}
   template< typename T >
   T Queue< T >::drop()
   {
