@@ -13,8 +13,7 @@ namespace ivanov
   public:
     CIter() noexcept:
       ptr_(nullptr)
-    {
-    }
+    {}
 
     CIter(const CIter&) noexcept = default;
     CIter(CIter&&) noexcept = default;
