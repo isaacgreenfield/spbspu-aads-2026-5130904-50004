@@ -27,14 +27,12 @@ namespace ivanov
       explicit Elem(const T& val, Elem* nxt = nullptr):
           data_(val),
           next_(nxt)
-      {
-      }
+      {}
 
       explicit Elem(T&& val, Elem* nxt = nullptr):
           data_(std::move(val)),
           next_(nxt)
-      {
-      }
+      {}
     };
 
     Elem* head_;
@@ -46,8 +44,7 @@ namespace ivanov
       : head_(nullptr),
         tail_(nullptr),
         sz_(0)
-    {
-    }
+    {}
 
     ~List()
     {
