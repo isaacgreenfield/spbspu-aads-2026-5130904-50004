@@ -18,6 +18,12 @@ namespace ivanov
     {
       return head->back();
     }
+
+    template <class... Args>
+    void emplace(Args&&... args)
+    {
+      head->emplace_back(std::forward<Args>(args)...);
+    }
   };
   template< typename T >
   bool Stack< T >::isEmpty()
