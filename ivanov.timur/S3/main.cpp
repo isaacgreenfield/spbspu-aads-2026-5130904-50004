@@ -3,7 +3,7 @@
 #include "Graph.h"
 
 int main(int argc, char* argv[]) {
-  bool isAnything  = false;
+  bool isAnything = false;
   if (argc != 2) {
     std::cerr << "Wrong" << std::endl;
     std::cout << "\n";
