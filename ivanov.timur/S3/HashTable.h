@@ -4,14 +4,77 @@
 #include <functional>
 #include <stdexcept>
 #include <vector>
-namespace ivanov {
-  template< class Key, class Value, class Hash, class Equal >
-  class HashTable {
-    struct Slot {
+namespace xtra {
+  struct Slot
+  {
       Key key;
       Value value;
-      int state = 0; // 0 – пусто, 1 – занято, 2 – tombstone
+      int state = 0;
+  };
+  class iterator
+  {
+    public:
+      iterator(Slot *p, Slot *e):
+        ptr(p),
+        end(e)
+      {
+        skip_empty();
+      }
+      std::pair< const Key &, Value & > operator*() const;
+      iterator &operator++();
+
+      bool operator==(const iterator &other) const;
+      bool operator!=(const iterator &other) const;
+
+    private:
+      friend class Slot;
+      friend class const_iterator;
+      Slot *ptr;
+      Slot *end;
+      void skip_empty()
+      {
+        while (ptr != end && ptr->state != 1) {
+          ++ptr;
+        }
+      }
+  };
+  class const_iterator
+  {
+    public:
+      const_iterator(const Slot *p, const Slot *e):
+        ptr(p),
+        end(e)
+      {
+        skip_empty();
+      }
+
+      std::pair< const Key &, const Value & > operator*() const;
+      const_iterator &operator++();
+
+      bool operator==(const const_iterator &other) const;
+      bool operator!=(const const_iterator &other) const;
+
+    private:
+      friend class Slot;
+      friend class iterator;
+      const Slot *ptr;
+      const Slot *end;
+      void skip_empty() 
+      {
+        while (ptr != end && ptr->state != 1) {
+          ++ptr;
+        }
+      }
     };
+}
+using namespace xtra;
+namespace ivanov {
+  template< class Key, class Value, class Hash, class Equal >
+  class HashTable
+  {
+    friend struct Slot;
+    friend class iterator;
+    friend class const_iterator;
     std::vector< Slot > table;
     size_t count = 0;
     Hash hash;
@@ -28,9 +91,18 @@ namespace ivanov {
     Value drop(const Key &key);
     void rehash(size_t new_cap);
 
-    size_t size() const noexcept { return count; }
-    size_t capacity() const noexcept { return table.size(); }
-    bool empty() const noexcept { return count == 0; }
+    size_t size() const noexcept 
+    {
+      return count;
+    }
+    size_t capacity() const noexcept 
+    { 
+      return table.size();
+    }
+    bool empty() const noexcept
+    { 
+      return count == 0;
+    }
 
     void clear() noexcept;
 
@@ -51,62 +123,6 @@ namespace ivanov {
       return table[idx].value;
     }
 
-    class iterator {
-      Slot *ptr;
-      Slot *end;
-      void skip_empty()
-      {
-        while (ptr != end && ptr->state != 1) {
-          ++ptr;
-        }
-      }
-
-    public:
-      iterator(Slot *p, Slot *e): ptr(p), end(e)
-      {
-        skip_empty();
-      }
-      std::pair< const Key &, Value & > operator*() const;
-      iterator &operator++();
-
-      bool operator==(const iterator &other) const
-      {
-        return ptr == other.ptr;
-      };
-      bool operator!=(const iterator &other) const 
-      {
-        return ptr != other.ptr;
-      };
-    };
-
-    class const_iterator {
-      const Slot *ptr;
-      const Slot *end;
-      void skip_empty() 
-      {
-        while (ptr != end && ptr->state != 1) {
-          ++ptr;
-        }
-      }
-    public:
-      const_iterator(const Slot *p, const Slot *e): ptr(p), end(e)
-      {
-        skip_empty();
-      }
-
-      std::pair< const Key &, const Value & > operator*() const;
-      const_iterator &operator++();
-
-      bool operator==(const const_iterator &other) const
-      {
-        return ptr == other.ptr;
-      };
-      bool operator!=(const const_iterator &other) const
-      {
-        return ptr != other.ptr;
-      };
-    };
-
     iterator begin();
     iterator end();
 
@@ -126,10 +142,10 @@ namespace ivanov {
     HashTable& operator=(const HashTable& other)
     {
       if (this != &other) {
-          table = other.table;
-          count = other.count;
-          hash  = other.hash;
-          equal = other.equal;
+          std::swap(table, other.table);
+          std::swap(count, other.count);
+          std::swap(hash, other.hash);
+          std::swap(equal, other.equal);
       }
       return *this;
     }
@@ -167,7 +183,9 @@ size_t HashTable< Key, Value, Hash, Equal >::find_insert_slot(const Key &key)
     if (table[idx].state == 0 || table[idx].state == 2) {
       return idx;
     }
-    else continue;
+    else {
+      continue;
+    }
   }
   throw std::overflow_error("Hash Table Overflow");
 }
@@ -294,5 +312,22 @@ template< class Key, class Value, class Hash, class Equal >
 typename HashTable< Key, Value, Hash, Equal >::const_iterator HashTable< Key, Value, Hash, Equal >::cend() const
 {
   return const_iterator(table.data() + table.size(), table.data() + table.size());
+}
+
+bool iterator::operator==(const iterator &other) const
+{
+  return ptr == other.ptr;
+}
+bool iterator::operator!=(const iterator &other) const
+{
+  return ptr != other.ptr;
+}
+bool const_iterator::operator==(const iterator &other) const
+{
+  return ptr == other.ptr;
+}
+bool const_iterator::operator!=(const iterator &other) const
+{
+  return ptr != other.ptr;
 }
 #endif
