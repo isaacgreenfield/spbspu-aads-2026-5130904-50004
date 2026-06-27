@@ -14,6 +14,11 @@ namespace ivanov
     void push(T rhs);
     T drop();
     bool isEmpty();
+
+    template <class... Args>
+    void emplace(Args&&... args) {
+        head->emplace_back(std::forward<Args>(args)...);
+    }
   };
 
   template< typename T >
