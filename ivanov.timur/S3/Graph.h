@@ -169,12 +169,10 @@ namespace ivanov {
             names.push_back((*it).first);
         }
         std::sort(names.begin(), names.end());
-        bool flag = false;
-        for (auto& name : names) {
-            flag = true;
+        for (auto& name: names) {
             std::cout << name << '\n';
         }
-        if(!flag) {
+        if(names.size() == 0) {
           std::cout << "\n";
         }
     }
@@ -200,14 +198,12 @@ namespace ivanov {
         std::vector< std::string > sverts = g.vertices;
         std::sort(sverts.begin(), sverts.end());
         sverts.erase(std::unique(sverts.begin(), sverts.end()), sverts.end());
-        bool flag = false;
-        for (auto& v : sverts) {
-            flag = true;
+        for (auto& v: sverts) {
             std::cout << v << '\n';
         }
-      if(!flag) {
-        std::cout << "\n";
-      }
+        if(sverts.size() == 0) {
+          std::cout << "\n";
+        }
     }
     else if (cmd == "outbound") {
         std::string gname, v;
@@ -234,7 +230,7 @@ namespace ivanov {
           isAnything = true;
           return;
         }
-        HashTable< std::string, std::vector<int>,std::hash< std::string >, std::equal_to< std::string > > out;
+        HashTable< std::string, std::vector< int >,std::hash< std::string >, std::equal_to< std::string > > out;
         for (auto it = g.edges.begin(); it != g.edges.end(); ++it) {
             auto& edge = (*it).first;
             if (edge.from == v) {
@@ -244,7 +240,7 @@ namespace ivanov {
                     auto& src = (*it).second;
                     wv.insert(wv.end(), src.begin(), src.end());
                 } else {
-                    out.add(target, (*it).second); // создаём копию вектора весов
+                    out.add(target, (*it).second);
                 }
             }
         }
@@ -254,9 +250,7 @@ namespace ivanov {
         }
         std::sort(keys.begin(), keys.end());
 
-        bool flag = false;
-        for (auto& key : keys) {
-            flag = true;
+        for (auto& key: keys) {
             auto& weights = out.at(key);
             std::sort(weights.begin(), weights.end());
             std::cout << key;
@@ -265,7 +259,7 @@ namespace ivanov {
             }
             std::cout << '\n';
         }
-        if(!flag) {
+        if(keys.size() == 0) {
           std::cout << "\n";
         }
     }
