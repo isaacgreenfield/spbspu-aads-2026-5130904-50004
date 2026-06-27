@@ -39,11 +39,10 @@ BOOST_AUTO_TEST_CASE(splice_all)
     b.push_back(3);
     b.push_back(4);
 
-    auto pos = a.cbegin(); // указывает на 1
+    auto pos = a.cbegin();
     a.splice(pos, b);
     BOOST_CHECK(b.empty());
     BOOST_CHECK_EQUAL(a.size(), 4);
-    // порядок: 1, 3, 4, 2 (вставка после 1)
     auto it = a.cbegin();
     BOOST_CHECK_EQUAL(*it++, 1);
     BOOST_CHECK_EQUAL(*it++, 3);
@@ -57,8 +56,8 @@ BOOST_AUTO_TEST_CASE(splice_one)
     a.push_back(10);
     b.push_back(20);
     b.push_back(30);
-    auto it_b = b.cbegin(); // указывает на 20
-    a.splice(a.cbegin(), b, it_b); // перенести 20 после 10
+    auto it_b = b.cbegin();
+    a.splice(a.cbegin(), b, it_b);
     BOOST_CHECK_EQUAL(a.size(), 2);
     BOOST_CHECK_EQUAL(b.size(), 1);
     auto ia = a.cbegin();
