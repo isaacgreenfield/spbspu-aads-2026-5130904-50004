@@ -51,6 +51,32 @@ namespace knk {
         iterator insert(const_iterator pos, const T& value);
         iterator erase(const_iterator pos);
 
+        char* data_;
+        size_t size_;
+        size_t capacity_;
+
+        void allocate(size_t new_cap) {
+            data_ = static_cast<char*>(::operator new(new_cap * sizeof(T)));
+            capacity_ = new_cap;
+        }
+        void destroy() {
+            for (size_t i = 0; i < size_; ++i) {
+                reinterpret_cast<T*>(data_ + i * sizeof(T))->~T();
+            }
+            ::operator delete(data_);
+        }
+        template <class... Args>
+        void construct_at(size_t idx, Args&&... args) {
+            new (data_ + idx * sizeof(T)) T(std::forward<Args>(args)...);
+        }
+
+        template <class... Args>
+        void emplace_back(Args&&... args) {
+            if (size_ == capacity_) reserve(capacity_ == 0 ? 1 : capacity_ * 2);
+            construct_at(size_, std::forward<Args>(args)...);
+            ++size_;
+        }
+
     private:
         T* data_;
         size_t size_;
