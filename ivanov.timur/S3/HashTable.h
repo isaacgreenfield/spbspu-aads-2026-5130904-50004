@@ -18,7 +18,7 @@ namespace xtra {
         ptr(p),
         end(e)
       {
-        skip_empty();
+        skip_is_empty();
       }
       std::pair< const Key &, Value & > operator*() const;
       iterator &operator++();
@@ -31,7 +31,7 @@ namespace xtra {
       friend class const_iterator;
       Slot *ptr;
       Slot *end;
-      void skip_empty()
+      void skip_is_empty()
       {
         while (ptr != end && ptr->state != 1) {
           ++ptr;
@@ -45,7 +45,7 @@ namespace xtra {
         ptr(p),
         end(e)
       {
-        skip_empty();
+        skip_is_empty();
       }
 
       std::pair< const Key &, const Value & > operator*() const;
@@ -59,7 +59,7 @@ namespace xtra {
       friend class iterator;
       const Slot *ptr;
       const Slot *end;
-      void skip_empty() 
+      void skip_is_empty() 
       {
         while (ptr != end && ptr->state != 1) {
           ++ptr;
@@ -72,19 +72,6 @@ namespace ivanov {
   template< class Key, class Value, class Hash, class Equal >
   class HashTable
   {
-    friend struct Slot;
-    friend class iterator;
-    friend class const_iterator;
-    std::vector< Slot > table;
-    size_t count = 0;
-    Hash hash;
-    Equal equal;
-    size_t probe(size_t hash_f, size_t i) const noexcept
-    {
-      return (hash_f + i * i) % table.size();
-    }
-    size_t find_slot(const Key &key) const;
-    size_t find_insert_slot(const Key &key);
   public:
     void add(const Key &key, const Value &value);
     bool has(const Key &key) const;
@@ -99,7 +86,7 @@ namespace ivanov {
     { 
       return table.size();
     }
-    bool empty() const noexcept
+    bool is_empty() const noexcept
     { 
       return count == 0;
     }
@@ -137,7 +124,8 @@ namespace ivanov {
     const_iterator cbegin() const;
     const_iterator cend() const;
 
-    HashTable(): table(16) {};
+    const int magical_number = 16;
+    HashTable(): table(magical_number) {};
     HashTable(const HashTable &other) = default;
     HashTable& operator=(const HashTable& other)
     {
@@ -150,6 +138,20 @@ namespace ivanov {
       return *this;
     }
     ~HashTable() = default;
+  private:
+    friend struct Slot;
+    friend class iterator;
+    friend class const_iterator;
+    std::vector< Slot > table;
+    size_t count = 0;
+    Hash hash;
+    Equal equal;
+    size_t probe(size_t hash_f, size_t i) const noexcept
+    {
+      return (hash_f + i * i) % table.size();
+    }
+    size_t find_slot(const Key &key) const;
+    size_t find_insert_slot(const Key &key);
   };
 }
 
@@ -158,7 +160,7 @@ using ivanov::HashTable;
 template< class Key, class Value, class Hash, class Equal >
 size_t HashTable< Key, Value, Hash, Equal >::find_slot(const Key &key) const
 {
-  if (table.empty()) {
+  if (table.is_empty()) {
     return table.size();
   }
   size_t h = hash(key) % table.size();
@@ -236,7 +238,7 @@ void HashTable< Key, Value, Hash, Equal >::add(const Key &key, const Value &valu
 template< class Key, class Value, class Hash, class Equal >
 bool HashTable< Key, Value, Hash, Equal >::has(const Key &key) const
 {
-  if (table.empty()) {
+  if (table.is_empty()) {
     return false;
   }
   size_t idx = find_slot(key);
@@ -275,7 +277,7 @@ template< class Key, class Value, class Hash, class Equal >
 typename HashTable< Key, Value, Hash, Equal >::iterator & HashTable< Key, Value, Hash, Equal >::iterator::operator++()
 {
   ++ptr;
-  skip_empty();
+  skip_is_empty();
   return *this;
 }
 
@@ -288,7 +290,7 @@ template< class Key, class Value, class Hash, class Equal >
 typename HashTable< Key, Value, Hash, Equal >::const_iterator & HashTable< Key, Value, Hash, Equal >::const_iterator::operator++()
 {
   ++ptr;
-  skip_empty();
+  skip_is_empty();
   return *this;
 }
 
