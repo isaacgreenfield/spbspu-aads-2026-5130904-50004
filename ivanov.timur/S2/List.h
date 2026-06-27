@@ -106,6 +106,10 @@ namespace ivanov {
       explicit Elem(T &&val, Elem *nxt = nullptr):
         data(std::move(val)), next(nxt)
       {}
+      template <class... Args>
+      explicit Elem(Args&&... args, Elem* nxt = nullptr):
+        data(std::forward<Args>(args)...), next(nxt)
+      {}
     };
 
     Elem *head;
@@ -161,6 +165,41 @@ namespace ivanov {
       std::swap(tail, other.tail);
       std::swap(sz, other.sz);
     }
+
+    template <class... Args>
+    void emplace_front(Args&&... args)
+    {
+      Elem* nw = new Elem(std::forward<Args>(args)..., head);
+      if (empty()) tail = nw;
+      head = nw;
+      ++sz;
+    }
+
+    template <class... Args>
+    void emplace_back(Args&&... args)
+    {
+      if (empty()) {
+        head = new Elem(std::forward<Args>(args)...);
+        tail = head;
+      } else {
+        tail->next = new Elem(std::forward<Args>(args)...);
+        tail = tail->next;
+      }
+      ++sz;
+    }
+
+    template <class... Args>
+    Iter<T> emplace_after(Iter<T> pos, Args&&... args)
+    {
+      Elem* curr = pos.ptr;
+      if (curr == nullptr) throw std::out_of_range("cannot emplace after nullptr");
+      Elem* nw = new Elem(std::forward<Args>(args)..., curr->next);
+      curr->next = nw;
+      if (curr == tail) tail = nw;
+      ++sz;
+      return Iter<T>(nw);
+    }
+
 
     Iter< T > begin() const
     {
