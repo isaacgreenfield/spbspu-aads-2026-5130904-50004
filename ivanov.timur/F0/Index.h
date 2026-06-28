@@ -25,13 +25,9 @@ namespace idx {
     class iterator;
     class const_iterator;
 
-    Index():
-    totalWords_(0)
-    {}
+    Index() : totalWords_(0) {}
 
-    explicit Index(std::istream& input):
-    totalWords_(0)
-    {
+    explicit Index(std::istream& input) : totalWords_(0) {
       ivanov::RBtree<std::string, vector<int>> tmpInvIndex;
       vector<std::string> tmpWordOrder;
       size_t pos = 0;
@@ -52,9 +48,9 @@ namespace idx {
           if (!word.empty()) {
             tmpWordOrder.push_back(word);
 
-            auto* positions = tmpInvIndex.search(word);
-            if (positions) {
-              positions->push_back(pos);
+            auto it = tmpInvIndex.find(word);
+            if (it != tmpInvIndex.end()) {
+              it->second.push_back(pos);
             } else {
               vector<int> tmp;
               tmp.push_back(pos);
@@ -94,10 +90,6 @@ namespace idx {
       return result;
     }
 
-    const vector<int>* getPositions(const std::string& word) const {
-      return invIndex_.search(word);
-    }
-
     size_t totalWords() const { return totalWords_; }
     size_t uniqueWords() const { return invIndex_.size(); }
 
@@ -110,11 +102,9 @@ namespace idx {
       invIndex_.insert(word, positions);
     }
     bool contains(const std::string& word) const {
-      return invIndex_.search(word) != nullptr;
+      return invIndex_.contains(word);
     }
-    vector<int>* getPositionsForUpdate(const std::string& word) {
-      return invIndex_.search(word);
-    }
+
     void addWordToOrder(const std::string& word) {
       wordOrder_.push_back(word);
     }
@@ -124,10 +114,12 @@ namespace idx {
     void setTotalWords(int n) { totalWords_ = n; }
 
     int wordFrequency(const std::string& word) const {
-      const vector<int>* pos = getPositions(word);
-      return pos ? static_cast<int>(pos->size()) : 0;
+      const_iterator it = find(word);
+      return (it != end()) ? static_cast<int>(it->second.size()) : 0;
     }
 
+    iterator find(const std::string& word);
+    const_iterator find(const std::string& word) const;
     iterator begin();
     iterator end();
     const_iterator begin() const;
@@ -155,6 +147,15 @@ namespace idx {
     iterator operator++(int) {
       iterator tmp = *this;
       ++(*this);
+      return tmp;
+    }
+    iterator& operator--() {
+      --treeIt_;
+      return *this;
+    }
+    iterator operator--(int) {
+      iterator tmp = *this;
+      --(*this);
       return tmp;
     }
 
@@ -189,6 +190,15 @@ namespace idx {
       ++(*this);
       return tmp;
     }
+    const_iterator& operator--() {
+      --treeIt_;
+      return *this;
+    }
+    const_iterator operator--(int) {
+      const_iterator tmp = *this;
+      --(*this);
+      return tmp;
+    }
 
     bool operator==(const const_iterator& other) const { return treeIt_ == other.treeIt_; }
     bool operator!=(const const_iterator& other) const { return treeIt_ != other.treeIt_; }
@@ -212,16 +222,25 @@ namespace idx {
     return iterator(invIndex_.end());
   }
   inline Index::const_iterator Index::begin() const {
-    return const_iterator(invIndex_.cbegin());
+    return const_iterator(invIndex_.begin());
   }
   inline Index::const_iterator Index::end() const {
-    return const_iterator(invIndex_.cend());
+    return const_iterator(invIndex_.end());
   }
   inline Index::const_iterator Index::cbegin() const {
     return begin();
   }
   inline Index::const_iterator Index::cend() const {
     return end();
+  }
+
+  inline Index::iterator Index::find(const std::string& word) {
+    auto it = invIndex_.find(word);
+    return iterator(it);
+  }
+  inline Index::const_iterator Index::find(const std::string& word) const {
+    auto it = invIndex_.find(word);
+    return const_iterator(it);
   }
 }
 

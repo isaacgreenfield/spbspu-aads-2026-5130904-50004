@@ -265,18 +265,17 @@ public:
       deleteNode(z);
   }
 
-  Value* search(const Key& key) {
-    Node *node = searchNode(key);
+  iterator find(const Key& key) {
+    Node* node = searchNode(key);
     if (node != NIL)
-      return &node->data.second;
-    return nullptr;
+      return iterator(node, this);
+    return end();
   }
-
-  const Value* search(const Key& key) const {
-    Node *node = searchNode(key);
+  const_iterator find(const Key& key) const {
+    Node* node = searchNode(key);
     if (node != NIL)
-      return &node->data.second;
-    return nullptr;
+      return const_iterator(node, this);
+    return end();
   }
 
   bool contains(const Key& key) const {
