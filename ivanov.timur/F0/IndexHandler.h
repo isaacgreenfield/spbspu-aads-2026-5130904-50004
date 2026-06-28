@@ -27,31 +27,47 @@ private:
   void addIndex(const std::string& name, Index* newIdx) {
     auto it = findIndex(name);
     if (it != indexesTree_.end()) {
-      delete it->second;
-      indexesTree_.remove(name);
+      Index* old = it->second;
+      try {
+        indexesTree_.insert(name, newIdx);
+        delete old;
+      } catch (...) {
+        delete newIdx;
+        throw;
+      }
+    } else {
+      try {
+        indexesTree_.insert(name, newIdx);
+      } catch (...) {
+        delete newIdx;
+        throw;
+      }
     }
-    indexesTree_.insert(name, newIdx);
   }
-
-  Index* buildFromWords(const idx::vector<std::string>& words, bool skipMarkers) {
+  static Index* buildFromWords(const idx::vector<std::string>& words, bool skipMarkers) {
     Index* idx = new Index();
-    int pos = 0;
-    for (const std::string& w : words) {
-      idx->addWordToOrder(w);
-      if (skipMarkers && w == "\n") {
-        continue;
+    try {
+      int pos = 0;
+      for (const std::string& w : words) {
+        idx->addWordToOrder(w);
+        if (skipMarkers && w == "\n") {
+          continue;
+        }
+        auto it = idx->find(w);
+        if (it != idx->end()) {
+          it->second.push_back(pos);
+        } else {
+          idx::vector<int> vec{pos};
+          idx->addEntry(w, vec);
+        }
+        ++pos;
       }
-      auto it = idx->find(w);
-      if (it != idx->end()) {
-        it->second.push_back(pos);
-      } else {
-        idx::vector<int> vec{pos};
-        idx->addEntry(w, vec);
-      }
-      ++pos;
+      idx->setTotalWords(pos);
+      return idx;
+    } catch (...) {
+      delete idx;
+      throw;
     }
-    idx->setTotalWords(pos);
-    return idx;
   }
 
   void searchTFIDF(const std::string& query) {
@@ -149,12 +165,6 @@ public:
   }
 
   void readIndex(const std::string& name, const std::string& filename) {
-    auto it = findIndex(name);
-    if (it != indexesTree_.end()) {
-      delete it->second;
-      indexesTree_.remove(name);
-    }
-
     std::ifstream file(filename);
     if (!file.is_open()) {
       std::cerr << "Error: cannot open file " << filename << "\n";
@@ -169,7 +179,7 @@ public:
       return;
     }
 
-    indexesTree_.insert(name, newIdx);
+    addIndex(name, newIdx);
     std::cout << "Index '" << name << "' created from " << filename
               << " (" << newIdx->totalWords() << " words)\n";
   }
@@ -313,22 +323,27 @@ public:
     Index* idx2 = it2->second;
 
     Index* newIdx = new Index();
-    int total = 0;
-    for (auto entryIt = idx1->begin(); entryIt != idx1->end(); ++entryIt) {
-      const std::string& word = entryIt->first;
-      const idx::vector<int>& pos1 = entryIt->second;
-      auto foundIt = idx2->find(word);
-      if (foundIt != idx2->end()) {
-        idx::vector<int> combined = pos1;
-        const auto& pos2 = foundIt->second;
-        combined.insert(combined.end(), pos2.begin(), pos2.end());
-        newIdx->addEntry(word, combined);
-        total += combined.size();
+    try {
+      int total = 0;
+      for (auto entryIt = idx1->begin(); entryIt != idx1->end(); ++entryIt) {
+        const std::string& word = entryIt->first;
+        const idx::vector<int>& pos1 = entryIt->second;
+        auto foundIt = idx2->find(word);
+        if (foundIt != idx2->end()) {
+          idx::vector<int> combined = pos1;
+          const auto& pos2 = foundIt->second;
+          combined.insert(combined.end(), pos2.begin(), pos2.end());
+          newIdx->addEntry(word, combined);
+          total += combined.size();
+        }
       }
+      newIdx->setTotalWords(total);
+      addIndex(newName, newIdx);
+    } catch (...) {
+      delete newIdx;
+      throw;
     }
 
-    newIdx->setTotalWords(total);
-    addIndex(newName, newIdx);
     std::cout << "Index '" << newName << "' created with "
               << newIdx->uniqueWords() << " common words\n";
   }
@@ -344,17 +359,21 @@ public:
     Index* idx2 = it2->second;
 
     Index* newIdx = new Index();
-    int total = 0;
-    for (auto entryIt = idx1->begin(); entryIt != idx1->end(); ++entryIt) {
-      const std::string& word = entryIt->first;
-      if (!idx2->contains(word)) {
-        newIdx->addEntry(word, entryIt->second);
-        total += entryIt->second.size();
+    try {
+      int total = 0;
+      for (auto entryIt = idx1->begin(); entryIt != idx1->end(); ++entryIt) {
+        const std::string& word = entryIt->first;
+        if (!idx2->contains(word)) {
+          newIdx->addEntry(word, entryIt->second);
+          total += entryIt->second.size();
+        }
       }
+      newIdx->setTotalWords(total);
+      addIndex(newName, newIdx);
+    } catch (...) {
+      delete newIdx;
+      throw;
     }
-
-    newIdx->setTotalWords(total);
-    addIndex(newName, newIdx);
     std::cout << "Index '" << newName << "' created with "
               << newIdx->uniqueWords() << " unique words from '"
               << idx1Name << "'\n";
