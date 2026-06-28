@@ -4,7 +4,6 @@
 #include "Index.h"
 #include "RBtree.h"
 #include "ix-vector.h"
-#include <sstream>
 #include <algorithm>
 #include <cmath>
 
@@ -39,7 +38,7 @@ private:
       if (vec) {
         vec->push_back(pos);
       } else {
-        idx->addEntry(w, idx::vector<int>{pos});
+        idx->addEntry(w, idx::vector<int>(pos));
       }
       ++pos;
     }
@@ -56,13 +55,21 @@ private:
   }
 
   void searchTFIDF(const std::string& query) {
-    std::istringstream iss(query);
     idx::vector<std::string> queryWords;
-    std::string w;
-    while (iss >> w) {
-      std::string norm = normalize(w);
+    size_t start = 0;
+    while (start < query.size()) {
+      while (start < query.size() && std::isspace(static_cast<unsigned char>(query[start])))
+        ++start;
+      if (start == query.size()) break;
+      size_t end = start;
+      while (end < query.size() && !std::isspace(static_cast<unsigned char>(query[end])))
+        ++end;
+      std::string word = query.substr(start, end - start);
+      std::string norm = normalize(word);
       if (!norm.empty()) queryWords.push_back(norm);
+      start = end;
     }
+
     if (queryWords.empty()) {
       std::cout << "Empty query\n";
       return;

@@ -6,7 +6,7 @@
 namespace idx {
 
 template <typename T>
-class vector { //CG TODO!!
+class vector {
 private:
   T* data_ = nullptr;
   size_t size_ = 0;
@@ -22,6 +22,12 @@ private:
 
 public:
   vector() = default;
+
+  explicit vector(const T& value) {
+    size_ = cap_ = 1;
+    data_ = allocate(1);
+    new (data_) T(value);
+  }
 
   ~vector() {
     for (size_t i = 0; i < size_; ++i)
@@ -91,7 +97,7 @@ public:
   };
 
   iterator begin() { return iterator(data_); }
-  const_iterator begin() const { return const_iterator(data_); }
+  ::idx::vector<int>::iterator begin() const { return const_iterator(data_); }
   iterator end() { return iterator(data_ + size_); }
   const_iterator end() const { return const_iterator(data_ + size_); }
 

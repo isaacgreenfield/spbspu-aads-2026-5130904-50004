@@ -6,7 +6,7 @@
 #include <fstream>
 
 namespace idx {
-  std::string normalize(const std::string& raw) {
+  inline std::string normalize(const std::string& raw) {
     std::string out;
     for (char ch : raw) {
       if (std::isalnum(static_cast<unsigned char>(ch)))
@@ -32,24 +32,35 @@ namespace idx {
       if (!file.is_open()) return false;
       clear();
 
-      std::string line, word;
+      std::string line;
       int pos = 0;
 
       while (std::getline(file, line)) {
-        std::istringstream iss(line);
-        while (iss >> word) {
-          word = normalize(word);
-          if (word.empty()) continue;
+        size_t start = 0;
+        while (start < line.size()) {
+          while (start < line.size() && std::isspace(static_cast<unsigned char>(line[start])))
+            ++start;
+          if (start == line.size()) break;
 
-          wordOrder_.push_back(word);
+          size_t end = start;
+          while (end < line.size() && !std::isspace(static_cast<unsigned char>(line[end])))
+            ++end;
 
-          auto* positions = invIndex_.search(word);
-          if (positions) {
-            positions->push_back(pos);
-          } else {
-            invIndex_.insert(word, vector<int>{pos});
+          std::string word = normalize(line.substr(start, end - start));
+          if (!word.empty()) {
+            wordOrder_.push_back(word);
+
+            auto* positions = invIndex_.search(word);
+            if (positions) {
+              positions->push_back(pos);
+            } else {
+              vector<int> tmp;
+              tmp.push_back(pos);
+              invIndex_.insert(word, tmp);
+            }
+            ++pos;
           }
-          ++pos;
+          start = end;
         }
       }
       totalWords_ = pos;
@@ -63,14 +74,20 @@ namespace idx {
     }
 
     std::string reconstructText() const {
-      if (totalWords_ != 0) return {};
-      std::ostringstream oss;
+      if (totalWords_ == 0) return {};
+      std::string result;
+      size_t totalChars = 0;
+      for (size_t i = 0; i < wordOrder_.size(); ++i)
+        totalChars += wordOrder_[i].size();
+      result.reserve(totalChars + wordOrder_.size() - 1);
+
       for (size_t i = 0; i < wordOrder_.size(); ++i) {
-        if (i > 0) oss << ' ';
-        oss << wordOrder_[i];
+        if (i > 0) result += ' ';
+        result += wordOrder_[i];
       }
-      return oss.str();
+      return result;
     }
+
     const vector<int>* getPositions(const std::string& word) const {
       return invIndex_.search(word);
     }
