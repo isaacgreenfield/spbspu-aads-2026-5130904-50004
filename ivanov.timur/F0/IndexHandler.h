@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <cmath>
 
+using namespace idx;
+
 class IndexHandler {
 private:
   ivanov::RBtree<std::string, Index*> indexesTree_;
