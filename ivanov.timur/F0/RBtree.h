@@ -99,7 +99,7 @@ private:
     root->color = false;
   }
 
-  int sizeRec(Node* node) const {
+  size_t sizeRec(Node* node) const {
     if (node == NIL) return 0;
     return 1 + sizeRec(node->left) + sizeRec(node->right);
   }
@@ -249,8 +249,8 @@ private:
 public:
 
   RBtree():
-  NIL(new Node(Key(), Value(), false)),
-  root(nullptr)
+  root(nullptr),
+  NIL(new Node(Key(), Value(), false))
   {
     NIL->left = NIL;
     NIL->right = NIL;
@@ -324,7 +324,7 @@ public:
     insertFixUp(z);
   }
 
-  int size() const { return sizeRec(root); }
+  size_t size() const { return sizeRec(root); }
 };
 }
 

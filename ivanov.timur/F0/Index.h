@@ -11,7 +11,7 @@ private:
   ivanov::RBtree<std::string, std::vector<int>> invIndex_;
   std::vector<std::string> wordOrder_;
   bool canReconstruct_;
-  int totalWords_;
+  size_t totalWords_;
 
 public:
   std::string normalize_(const std::string& raw) {
@@ -75,8 +75,8 @@ public:
     return invIndex_.search(word);
   }
 
-  int totalWords() const { return totalWords_; }
-  int uniqueWords() const { return invIndex_.size(); }
+  size_t totalWords() const { return totalWords_; }
+  size_t uniqueWords() const { return invIndex_.size(); }
   bool canReconstruct() const { return canReconstruct_; }
 
   template<typename Func>
