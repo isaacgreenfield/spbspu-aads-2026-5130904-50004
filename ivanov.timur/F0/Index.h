@@ -10,7 +10,6 @@ class Index {
 private:
   ivanov::RBtree<std::string, std::vector<int>> invIndex_;
   std::vector<std::string> wordOrder_;
-  bool canReconstruct_;
   size_t totalWords_;
 
 public:
@@ -23,7 +22,9 @@ public:
     return out;
   }
 
-  Index() : canReconstruct_(false), totalWords_(0) {}
+  Index():
+  totalWords_(0)
+  {}
 
   bool buildFromFile(const std::string& filename) {
     std::ifstream file(filename);
@@ -32,7 +33,6 @@ public:
 
     std::string line, word;
     int pos = 0;
-    canReconstruct_ = true;
 
     while (std::getline(file, line)) {
       std::istringstream iss(line);
@@ -58,12 +58,11 @@ public:
   void clear() {
     invIndex_.clear();
     wordOrder_.clear();
-    canReconstruct_ = false;
     totalWords_ = 0;
   }
 
   std::string reconstructText() const {
-    if (!canReconstruct_) return {};
+    if (totalWords_ != 0) return {};
     std::ostringstream oss;
     for (size_t i = 0; i < wordOrder_.size(); ++i) {
       if (i > 0) oss << ' ';
@@ -77,7 +76,6 @@ public:
 
   size_t totalWords() const { return totalWords_; }
   size_t uniqueWords() const { return invIndex_.size(); }
-  bool canReconstruct() const { return canReconstruct_; }
 
   template<typename Func>
   void forEachEntry(Func f) const {
@@ -100,7 +98,6 @@ public:
     return wordOrder_;
   }
   void setTotalWords(int n) { totalWords_ = n; }
-  void setReconstructable(bool v) { canReconstruct_ = v; }
 
   int wordFrequency(const std::string& word) const {
     const std::vector<int>* pos = getPositions(word);

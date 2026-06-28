@@ -41,7 +41,6 @@ private:
       ++pos;
     }
     idx->setTotalWords(pos);
-    idx->setReconstructable(true);
     return idx;
   }
 
@@ -157,7 +156,7 @@ public:
       std::cerr << "Error: index '" << indexName << "' not found." << "\n";
       return;
     }
-    if (!idx->canReconstruct()) {
+    if (idx->totalWords() == 0) {
       std::cerr << "Error: index '" << indexName << "' cannot be reconstructed." << "\n";
       return;
     }
@@ -291,7 +290,6 @@ public:
     });
 
     newIdx->setTotalWords(total);
-    newIdx->setReconstructable(false);
     addIndex(newName, newIdx);
     std::cout << "Index '" << newName << "' created with "
               << newIdx->uniqueWords() << " common words\n";
@@ -315,7 +313,6 @@ public:
     });
 
     newIdx->setTotalWords(total);
-    newIdx->setReconstructable(false);
     addIndex(newName, newIdx);
     std::cout << "Index '" << newName << "' created with "
               << newIdx->uniqueWords() << " unique words from '"
