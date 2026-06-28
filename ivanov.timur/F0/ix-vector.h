@@ -97,7 +97,7 @@ public:
   };
 
   iterator begin() { return iterator(data_); }
-  ::idx::vector<int>::iterator begin() const { return const_iterator(data_); }
+  idx::vector<int>::iterator begin() const { return const_iterator(data_); }
   iterator end() { return iterator(data_ + size_); }
   const_iterator end() const { return const_iterator(data_ + size_); }
 

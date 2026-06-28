@@ -22,6 +22,8 @@ namespace idx {
     size_t totalWords_;
 
   public:
+    class iterator;
+    class const_iterator;
 
     Index():
     totalWords_(0)
@@ -125,7 +127,102 @@ namespace idx {
       const vector<int>* pos = getPositions(word);
       return pos ? static_cast<int>(pos->size()) : 0;
     }
+
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
+    friend class iterator;
+    friend class const_iterator;
   };
+
+  class Index::iterator {
+    friend class Index;
+  public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = std::pair<const std::string, vector<int>>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+    iterator& operator++() {
+      ++treeIt_;
+      return *this;
+    }
+    iterator operator++(int) {
+      iterator tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    bool operator==(const iterator& other) const { return treeIt_ == other.treeIt_; }
+    bool operator!=(const iterator& other) const { return treeIt_ != other.treeIt_; }
+
+    reference operator*() const { return *treeIt_; }
+    pointer operator->() const { return &(*treeIt_); }
+
+  private:
+    using TreeIterator = typename ivanov::RBtree<std::string, vector<int>>::iterator;
+    TreeIterator treeIt_;
+
+    explicit iterator(TreeIterator it) : treeIt_(it) {}
+  };
+
+  class Index::const_iterator {
+    friend class Index;
+  public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = const std::pair<const std::string, vector<int>>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+    const_iterator& operator++() {
+      ++treeIt_;
+      return *this;
+    }
+    const_iterator operator++(int) {
+      const_iterator tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    bool operator==(const const_iterator& other) const { return treeIt_ == other.treeIt_; }
+    bool operator!=(const const_iterator& other) const { return treeIt_ != other.treeIt_; }
+
+    reference operator*() const { return *treeIt_; }
+    pointer operator->() const { return &(*treeIt_); }
+
+    const_iterator(const iterator& it) : treeIt_(it.treeIt_) {}
+
+  private:
+    using TreeConstIterator = typename ivanov::RBtree<std::string, vector<int>>::const_iterator;
+    TreeConstIterator treeIt_;
+
+    explicit const_iterator(TreeConstIterator it) : treeIt_(it) {}
+  };
+
+  inline Index::iterator Index::begin() {
+    return iterator(invIndex_.begin());
+  }
+  inline Index::iterator Index::end() {
+    return iterator(invIndex_.end());
+  }
+  inline Index::const_iterator Index::begin() const {
+    return const_iterator(invIndex_.cbegin());
+  }
+  inline Index::const_iterator Index::end() const {
+    return const_iterator(invIndex_.cend());
+  }
+  inline Index::const_iterator Index::cbegin() const {
+    return begin();
+  }
+  inline Index::const_iterator Index::cend() const {
+    return end();
+  }
 }
 
 #endif

@@ -1,4 +1,5 @@
 #include "IndexHandler.h"
+#include <sstream>
 
 int main() {
   IndexHandler handler;
