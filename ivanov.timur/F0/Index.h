@@ -1,10 +1,9 @@
 #ifndef INDEX_H
 #define INDEX_H
 #include "RBtree.h"
+#include "ix-vector.h"
 
 #include <fstream>
-#include <sstream>
-#include <vector>
 
 namespace idx {
   std::string normalize(const std::string& raw) {
@@ -18,8 +17,8 @@ namespace idx {
 
   class Index {
   private:
-    ivanov::RBtree<std::string, std::vector<int>> invIndex_;
-    std::vector<std::string> wordOrder_;
+    ivanov::RBtree<std::string, vector<int>> invIndex_;
+    vector<std::string> wordOrder_;
     size_t totalWords_;
 
   public:
@@ -48,7 +47,7 @@ namespace idx {
           if (positions) {
             positions->push_back(pos);
           } else {
-            invIndex_.insert(word, std::vector<int>{pos});
+            invIndex_.insert(word, vector<int>{pos});
           }
           ++pos;
         }
@@ -72,7 +71,7 @@ namespace idx {
       }
       return oss.str();
     }
-    const std::vector<int>* getPositions(const std::string& word) const {
+    const vector<int>* getPositions(const std::string& word) const {
       return invIndex_.search(word);
     }
 
@@ -84,25 +83,25 @@ namespace idx {
       invIndex_.forEach(f);
     }
 
-    void addEntry(const std::string& word, const std::vector<int>& positions) {
+    void addEntry(const std::string& word, const vector<int>& positions) {
       invIndex_.insert(word, positions);
     }
     bool contains(const std::string& word) const {
       return invIndex_.search(word) != nullptr;
     }
-    std::vector<int>* getPositionsForUpdate(const std::string& word) {
+    vector<int>* getPositionsForUpdate(const std::string& word) {
       return invIndex_.search(word);
     }
     void addWordToOrder(const std::string& word) {
       wordOrder_.push_back(word);
     }
-    const std::vector<std::string>& getWordOrder() const {
+    const vector<std::string>& getWordOrder() const {
       return wordOrder_;
     }
     void setTotalWords(int n) { totalWords_ = n; }
 
     int wordFrequency(const std::string& word) const {
-      const std::vector<int>* pos = getPositions(word);
+      const vector<int>* pos = getPositions(word);
       return pos ? static_cast<int>(pos->size()) : 0;
     }
   };

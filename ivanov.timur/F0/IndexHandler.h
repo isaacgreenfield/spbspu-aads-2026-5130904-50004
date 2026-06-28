@@ -3,6 +3,7 @@
 
 #include "Index.h"
 #include "RBtree.h"
+#include "ix-vector.h"
 #include <sstream>
 #include <algorithm>
 #include <cmath>
@@ -26,7 +27,7 @@ private:
     indexesTree_.insert(name, newIdx);
   }
 
-  Index* buildFromWords(const std::vector<std::string>& words, bool skipMarkers) {
+  Index* buildFromWords(const idx::vector<std::string>& words, bool skipMarkers) {
     Index* idx = new Index();
     int pos = 0;
     for (const std::string& w : words) {
@@ -38,7 +39,7 @@ private:
       if (vec) {
         vec->push_back(pos);
       } else {
-        idx->addEntry(w, std::vector<int>{pos});
+        idx->addEntry(w, idx::vector<int>{pos});
       }
       ++pos;
     }
@@ -46,8 +47,8 @@ private:
     return idx;
   }
 
-  std::vector<std::pair<std::string, Index*>> getAllIndexes() const {
-    std::vector<std::pair<std::string, Index*>> result;
+  idx::vector<std::pair<std::string, Index*>> getAllIndexes() const {
+    idx::vector<std::pair<std::string, Index*>> result;
     indexesTree_.forEach([&](const std::string& name, Index* idx) {
       result.emplace_back(name, idx);
     });
@@ -56,10 +57,10 @@ private:
 
   void searchTFIDF(const std::string& query) {
     std::istringstream iss(query);
-    std::vector<std::string> queryWords;
+    idx::vector<std::string> queryWords;
     std::string w;
     while (iss >> w) {
-      std::string norm = Index::normalize_(w);
+      std::string norm = normalize(w);
       if (!norm.empty()) queryWords.push_back(norm);
     }
     if (queryWords.empty()) {
@@ -75,7 +76,7 @@ private:
     }
 
     ivanov::RBtree<std::string, double> idfTree;
-    std::vector<std::string> uniqueWords;
+    idx::vector<std::string> uniqueWords;
     for (const auto& qw : queryWords) {
       bool found = false;
       for (const auto& uw : uniqueWords) {
@@ -93,7 +94,7 @@ private:
       idfTree.insert(word, idf);
     }
 
-    std::vector<std::pair<std::string, double>> scores;
+    idx::vector<std::pair<std::string, double>> scores;
     for (const auto& p : indexes) {
       double score = 0.0;
       int totalWords = p.second->totalWords();
@@ -177,7 +178,7 @@ public:
       std::cerr << "Error: index '" << indexName << "' not found.\n";
       return;
     }
-    const std::vector<int>* pos = idx->getPositions(word);
+    const idx::vector<int>* pos = idx->getPositions(word);
     if (!pos || pos->empty()) {
       std::cout << "Word '" << word << "' not found in '" << indexName << "'\n";
     } else {
@@ -197,7 +198,7 @@ public:
       std::cerr << "Error: one of source indexes does not exist.\n";
       return;
     }
-    std::vector<std::string> words = idx2->getWordOrder();
+    idx::vector<std::string> words = idx2->getWordOrder();
     const auto& w1 = idx1->getWordOrder();
     words.insert(words.end(), w1.begin(), w1.end());
 
@@ -215,7 +216,7 @@ public:
       std::cerr << "Error: one of source indexes does not exist.\n";
       return;
     }
-    std::vector<std::string> words = idx2->getWordOrder();
+    idx::vector<std::string> words = idx2->getWordOrder();
     words.push_back("\n");
     const auto& w1 = idx1->getWordOrder();
     words.insert(words.end(), w1.begin(), w1.end());
@@ -257,7 +258,7 @@ public:
       std::cerr << "Error: one of source indexes does not exist.\n";
       return;
     }
-    std::vector<std::string> words = idx1->getWordOrder();
+    idx::vector<std::string> words = idx1->getWordOrder();
     int size = static_cast<int>(words.size());
     if (addPos < 1) addPos = 1;
     if (addPos > size + 1) addPos = size + 1;
@@ -281,10 +282,10 @@ public:
 
     Index* newIdx = new Index();
     int total = 0;
-    idx1->forEachEntry([&](const std::string& word, const std::vector<int>& pos1) {
-      const std::vector<int>* pos2 = idx2->getPositions(word);
+    idx1->forEachEntry([&](const std::string& word, const idx::vector<int>& pos1) {
+      const idx::vector<int>* pos2 = idx2->getPositions(word);
       if (pos2) {
-        std::vector<int> combined = pos1;
+        idx::vector<int> combined = pos1;
         combined.insert(combined.end(), pos2->begin(), pos2->end());
         newIdx->addEntry(word, combined);
         total += combined.size();
@@ -307,7 +308,7 @@ public:
 
     Index* newIdx = new Index();
     int total = 0;
-    idx1->forEachEntry([&](const std::string& word, const std::vector<int>& pos1) {
+    idx1->forEachEntry([&](const std::string& word, const idx::vector<int>& pos1) {
       if (!idx2->contains(word)) {
         newIdx->addEntry(word, pos1);
         total += pos1.size();
