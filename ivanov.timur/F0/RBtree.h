@@ -216,12 +216,12 @@ private:
       delete node;
     }
   }
-  void inorder(Node *node) const {
+  void inorder(Node *node, std::ostream& os = std::cout) const {
     if (node != NIL) {
-      inorder(node->left);
-      std::cout << node->key << " -> " << node->val
-                << (node->color == true ? " (R)" : " (B)") << "\n";
-      inorder(node->right);
+      inorder(node->left, os);
+      os << node->key << " -> " << node->val
+         << (node->color == true ? " (R)" : " (B)") << "\n";
+      inorder(node->right, os);
     }
   }
 
@@ -248,8 +248,10 @@ private:
 
 public:
 
-  RBtree() {
-    NIL = new Node(Key(), Value(), false);
+  RBtree():
+  NIL(new Node(Key(), Value(), false)),
+  root(nullptr)
+  {
     NIL->left = NIL;
     NIL->right = NIL;
     NIL->parent = NIL;
