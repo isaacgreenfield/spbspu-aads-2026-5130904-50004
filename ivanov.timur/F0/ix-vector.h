@@ -12,39 +12,50 @@ private:
   size_t size_ = 0;
   size_t cap_ = 0;
 
-  static T* allocate(size_t n) {
-    return reinterpret_cast<T*>(new char[n * sizeof(T)]);
+  static T* allocate(size_t n)
+  {
+    return reinterpret_cast< T* >(new char[n * sizeof(T)]);
   }
 
-  static void deallocate(T* p) {
-    delete[] reinterpret_cast<char*>(p);
+  static void deallocate(T* p)
+  {
+    delete[] reinterpret_cast< char* >(p);
   }
 
 public:
   vector() = default;
 
-  explicit vector(const T& value) {
-    size_ = cap_ = 1;
+  explicit vector(const T& value):
+  size_(1),
+  cap_(1),
+  data_(nullptr)
+  {
     data_ = allocate(1);
     new (data_) T(value);
   }
 
-  ~vector() {
+  ~vector()
+  {
     for (size_t i = 0; i < size_; ++i)
       data_[i].~T();
     deallocate(data_);
   }
 
-  void clear() {
+  void clear()
+  {
     for (size_t i = 0; i < size_; ++i)
       data_[i].~T();
     size_ = 0;
   }
 
-  bool empty() const { return size_ == 0; }
+  bool empty() const
+  {
+    return size_ == 0;
+  }
 
   template <typename... Args>
-  void emplace_back(Args&&... args) {
+  void emplace_back(Args&&... args)
+  {
     if (size_ == cap_) {
       size_t new_cap = (cap_ == 0) ? 4 : cap_ * 2;
       T* new_data = allocate(new_cap);
@@ -71,44 +82,112 @@ public:
   class iterator {
     friend class vector;
     T* ptr_;
-    explicit iterator(T* p) : ptr_(p) {}
+    explicit iterator(T* p):
+    ptr_(p)
+    {}
   public:
-    T& operator*() const { return *ptr_; }
-    T* operator->() const { return ptr_; }
-    iterator& operator++() { ++ptr_; return *this; }
-    iterator operator++(int) { iterator tmp = *this; ++ptr_; return tmp; }
-    bool operator==(const iterator& other) const { return ptr_ == other.ptr_; }
-    bool operator!=(const iterator& other) const { return ptr_ != other.ptr_; }
-    iterator operator+(size_t n) const { return iterator(ptr_ + n); }
-    size_t operator-(const iterator& other) const { return ptr_ - other.ptr_; }
+    T& operator*() const
+    {
+      return *ptr_;
+    }
+    T* operator->() const
+    {
+      return ptr_;
+    }
+    iterator& operator++()
+    {
+      ++ptr_;
+      return *this;
+    }
+    iterator operator++(int)
+    {
+      iterator tmp = *this;
+      ++ptr_;
+      return tmp;
+    }
+    bool operator==(const iterator& other) const
+    {
+      return ptr_ == other.ptr_;
+    }
+    bool operator!=(const iterator& other) const
+    {
+      return ptr_ != other.ptr_;
+    }
+    iterator operator+(size_t n) const
+    {
+      return iterator(ptr_ + n);
+    }
+    size_t operator-(const iterator& other) const
+    {
+      return ptr_ - other.ptr_;
+    }
   };
 
   class const_iterator {
     friend class vector;
     const T* ptr_;
-    explicit const_iterator(const T* p) : ptr_(p) {}
+    explicit const_iterator(const T* p):
+    ptr_(p)
+    {}
   public:
-    const T& operator*() const { return *ptr_; }
-    const T* operator->() const { return ptr_; }
-    const_iterator& operator++() { ++ptr_; return *this; }
-    const_iterator operator++(int) { const_iterator tmp = *this; ++ptr_; return tmp; }
-    bool operator==(const const_iterator& other) const { return ptr_ == other.ptr_; }
-    bool operator!=(const const_iterator& other) const { return ptr_ != other.ptr_; }
+    const T& operator*() const
+    {
+      return *ptr_;
+    }
+    const T* operator->() const
+    {
+      return ptr_;
+    }
+    const_iterator& operator++()
+    {
+      ++ptr_; return *this;
+    }
+    const_iterator operator++(int)
+    {
+      const_iterator tmp = *this;
+      ++ptr_;
+      return tmp;
+    }
+    bool operator==(const const_iterator& other) const
+    {
+      return ptr_ == other.ptr_;
+    }
+    bool operator!=(const const_iterator& other) const
+    {
+      return ptr_ != other.ptr_;
+    }
   };
 
-  iterator begin() { return iterator(data_); }
-  idx::vector<int>::iterator begin() const { return const_iterator(data_); }
-  iterator end() { return iterator(data_ + size_); }
-  const_iterator end() const { return const_iterator(data_ + size_); }
+  iterator begin()
+  {
+    return iterator(data_);
+  }
+  idx::vector<int>::iterator begin() const
+  {
+    return const_iterator(data_);
+  }
+  iterator end()
+  {
+    return iterator(data_ + size_);
+  }
+  const_iterator end() const
+  {
+    return const_iterator(data_ + size_);
+  }
 
-  iterator insert(iterator pos, iterator first, iterator last) {
+  iterator insert(iterator pos, iterator first, iterator last)
+  {
     size_t offset = pos.ptr_ - data_;
     size_t count = last.ptr_ - first.ptr_;
-    if (count == 0) return pos;
+    if (count == 0) {
+      return pos;
+    }
 
     if (size_ + count > cap_) {
       size_t new_cap = cap_ * 2;
-      while (new_cap < size_ + count) new_cap *= 2;
+      while (new_cap < size_ + count) {
+        new_cap *= 2;
+      }
       T* new_data = allocate(new_cap);
       size_t i = 0;
       try {
@@ -141,9 +220,11 @@ public:
     return iterator(data_ + offset);
   }
 
-  vector(const vector& other) {
-    size_ = other.size_;
-    cap_ = other.size_;
+  vector(const vector& other):
+  size_(other.size_),
+  cap_(other.cap_),
+  data_(nullptr)
+  {
     if (cap_ > 0) {
       data_ = allocate(cap_);
       for (size_t i = 0; i < size_; ++i)
@@ -151,19 +232,30 @@ public:
     }
   }
 
-  vector& operator=(vector other) noexcept {
+  vector& operator=(vector other) noexcept
+  {
     std::swap(this->size_, other.size_);
     std::swap(this->cap_, other.cap_);
     std::swap(this->data_, other.data_);
     return *this;
   }
 
-  size_t size() const { return size_; }
+  size_t size() const
+  {
+    return size_;
+  }
 
-  const T& operator[](size_t i) const { return data_[i]; }
-  T& operator[](size_t i) { return data_[i]; }
+  const T& operator[](size_t i) const
+  {
+    return data_[i];
+  }
+  T& operator[](size_t i)
+  {
+    return data_[i];
+  }
 
-  void push_back(const T& value) {
+  void push_back(const T& value)
+  {
     if (size_ == cap_) {
       size_t new_cap = (cap_ == 0) ? 4 : cap_ * 2;
       T* new_data = allocate(new_cap);
@@ -187,8 +279,11 @@ public:
     ++size_;
   }
 
-  void append(const vector& other) {
-    if (other.size_ == 0) return;
+  void append(const vector& other)
+  {
+    if (other.size_ == 0) {
+      return;
+    }
     size_t new_size = size_ + other.size_;
     if (new_size > cap_) {
       size_t new_cap = (cap_ == 0) ? other.size_ : cap_ * 2;

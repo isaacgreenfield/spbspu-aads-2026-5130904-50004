@@ -11,20 +11,23 @@ using namespace idx;
 
 class IndexHandler {
 private:
-  ivanov::RBtree<std::string, Index*> indexesTree_;
+  ivanov::RBtree< std::string, Index* > indexesTree_;
 
-  using TreeIterator = typename ivanov::RBtree<std::string, Index*>::iterator;
-  using ConstTreeIterator = typename ivanov::RBtree<std::string, Index*>::const_iterator;
+  using TreeIterator = typename ivanov::RBtree< std::string, Index* >::iterator;
+  using ConstTreeIterator = typename ivanov::RBtree< std::string, Index* >::const_iterator;
 
-  TreeIterator findIndex(const std::string& name) {
+  TreeIterator findIndex(const std::string& name)
+  {
     return indexesTree_.find(name);
   }
 
-  ConstTreeIterator findIndex(const std::string& name) const {
+  ConstTreeIterator findIndex(const std::string& name) const
+  {
     return indexesTree_.find(name);
   }
 
-  void addIndex(const std::string& name, Index* newIdx) {
+  void addIndex(const std::string& name, Index* newIdx)
+  {
     auto it = findIndex(name);
     if (it != indexesTree_.end()) {
       Index* old = it->second;
@@ -39,7 +42,8 @@ private:
       }
     }
   }
-  static Index* buildFromWords(const idx::vector<std::string>& words, bool skipMarkers) {
+  static Index* buildFromWords(const idx::vector< std::string >& words, bool skipMarkers)
+  {
     Index* idx = new Index();
     try {
       int pos = 0;
@@ -65,19 +69,24 @@ private:
     }
   }
 
-  void searchTFIDF(const std::string& query) {
-    idx::vector<std::string> queryWords;
+  void searchTFIDF(const std::string& query)
+  {
+    idx::vector< std::string > queryWords;
     size_t start = 0;
     while (start < query.size()) {
-      while (start < query.size() && std::isspace(static_cast<unsigned char>(query[start])))
+      while (start < query.size() && std::isspace(static_cast< unsigned char >(query[start])))
         ++start;
-      if (start == query.size()) break;
+      if (start == query.size()) {
+        break;
+      }
       size_t end = start;
-      while (end < query.size() && !std::isspace(static_cast<unsigned char>(query[end])))
+      while (end < query.size() && !std::isspace(static_cast< unsigned char >(query[end])))
         ++end;
       std::string word = query.substr(start, end - start);
       std::string norm = normalize(word);
-      if (!norm.empty()) queryWords.push_back(norm);
+      if (!norm.empty()) {
+        queryWords.push_back(norm);
+      }
       start = end;
     }
 
@@ -95,16 +104,21 @@ private:
       return;
     }
 
-    idx::vector<std::string> uniqueWords;
+    idx::vector< std::string > uniqueWords;
     for (const auto& qw : queryWords) {
       bool found = false;
       for (const auto& uw : uniqueWords) {
-        if (uw == qw) { found = true; break; }
+        if (uw == qw) {
+          found = true;
+          break;
+        }
       }
-      if (!found) uniqueWords.push_back(qw);
+      if (!found) {
+        uniqueWords.push_back(qw);
+      }
     }
 
-    ivanov::RBtree<std::string, double> idfTree;
+    ivanov::RBtree< std::string, double > idfTree;
     for (const auto& word : uniqueWords) {
       int df = 0;
       for (auto it = indexesTree_.begin(); it != indexesTree_.end(); ++it) {
@@ -114,13 +128,15 @@ private:
       idfTree.insert(word, idf);
     }
 
-    idx::vector<std::pair<std::string, double>> scores;
+    idx::vector< std::pair< std::string, double > > scores;
     for (auto it = indexesTree_.begin(); it != indexesTree_.end(); ++it) {
       const std::string& docName = it->first;
       Index* idx = it->second;
       double score = 0.0;
       int totalWords = idx->totalWords();
-      if (totalWords == 0) continue;
+      if (totalWords == 0) {
+        continue;
+      }
       idfTree.forEach([&](const std::string& word, double idf) {
         int tf = idx->wordFrequency(word);
         if (tf > 0) {
@@ -134,7 +150,9 @@ private:
     }
 
     std::sort(scores.begin(), scores.end(),
-              [](const auto& a, const auto& b) { return a.second > b.second; });
+              [](const auto& a, const auto& b) {
+                return a.second > b.second;
+              });
 
     std::cout << "Search results for '" << query << "':\n";
     if (scores.empty()) {
@@ -149,17 +167,20 @@ private:
 public:
   IndexHandler() = default;
 
-  ~IndexHandler() {
+  ~IndexHandler()
+  {
     for (auto it = indexesTree_.begin(); it != indexesTree_.end(); ++it) {
       delete it->second;
     }
   }
 
-  void search(const std::string& query) {
+  void search(const std::string& query)
+  {
     searchTFIDF(query);
   }
 
-  void readIndex(const std::string& name, const std::string& filename) {
+  void readIndex(const std::string& name, const std::string& filename)
+  {
     std::ifstream file(filename);
     if (!file.is_open()) {
       std::cerr << "Error: cannot open file " << filename << "\n";
@@ -179,7 +200,8 @@ public:
               << " (" << newIdx->totalWords() << " words)\n";
   }
 
-  void writeIndex(const std::string& filename, const std::string& indexName) {
+  void writeIndex(const std::string& filename, const std::string& indexName)
+  {
     auto it = findIndex(indexName);
     if (it == indexesTree_.end()) {
       std::cerr << "Error: index '" << indexName << "' not found." << "\n";
@@ -199,7 +221,8 @@ public:
     std::cout << "Text restored from '" << indexName << "' and written to " << filename << "\n";
   }
 
-  void searchWord(const std::string& word, const std::string& indexName) {
+  void searchWord(const std::string& word, const std::string& indexName)
+  {
     auto it = findIndex(indexName);
     if (it == indexesTree_.end()) {
       std::cerr << "Error: index '" << indexName << "' not found.\n";
@@ -213,14 +236,17 @@ public:
       const auto& positions = wordIt->second;
       std::cout << "Word '" << word << "' found at positions: ";
       for (size_t i = 0; i < positions.size(); ++i) {
-        if (i > 0) std::cout << ", ";
+        if (i > 0) {
+          std::cout << ", ";
+        }
         std::cout << positions[i] + 1;
       }
       std::cout << "\n";
     }
   }
 
-  void rightMerge(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name) {
+  void rightMerge(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name)
+  {
     auto it1 = findIndex(idx1Name);
     auto it2 = findIndex(idx2Name);
     if (it1 == indexesTree_.end() || it2 == indexesTree_.end()) {
@@ -229,7 +255,7 @@ public:
     }
     Index* idx1 = it1->second;
     Index* idx2 = it2->second;
-    idx::vector<std::string> words = idx1->getWordOrder();
+    idx::vector< std::string > words = idx1->getWordOrder();
     const auto& w2 = idx2->getWordOrder();
     words.insert(words.end(), w2.begin(), w2.end());
 
@@ -240,7 +266,8 @@ public:
               << " words)\n";
   }
 
-  void downMerge(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name) {
+  void downMerge(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name)
+  {
     auto it1 = findIndex(idx1Name);
     auto it2 = findIndex(idx2Name);
     if (it1 == indexesTree_.end() || it2 == indexesTree_.end()) {
@@ -249,7 +276,7 @@ public:
     }
     Index* idx1 = it1->second;
     Index* idx2 = it2->second;
-    idx::vector<std::string> words = idx1->getWordOrder();
+    idx::vector< std::string > words = idx1->getWordOrder();
     words.push_back("\n");
     const auto& w2 = idx2->getWordOrder();
     words.insert(words.end(), w2.begin(), w2.end());
@@ -261,7 +288,8 @@ public:
               << " words)\n";
   }
 
-  void deleteIndex(const std::string& name) {
+  void deleteIndex(const std::string& name)
+  {
     auto it = findIndex(name);
     if (it == indexesTree_.end()) {
       std::cerr << "Error: index '" << name << "' not found.\n";
@@ -272,7 +300,8 @@ public:
     std::cout << "Index '" << name << "' deleted\n";
   }
 
-  void listIndexes() const {
+  void listIndexes() const
+  {
     std::cout << "Active indexes:\n";
     if (indexesTree_.empty()) {
       std::cout << "  (none)\n";
@@ -284,7 +313,8 @@ public:
     }
   }
 
-  void add(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name, int addPos) {
+  void add(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name, int addPos)
+  {
     auto it1 = findIndex(idx1Name);
     auto it2 = findIndex(idx2Name);
     if (it1 == indexesTree_.end() || it2 == indexesTree_.end()) {
@@ -293,10 +323,14 @@ public:
     }
     Index* idx1 = it1->second;
     Index* idx2 = it2->second;
-    idx::vector<std::string> words = idx1->getWordOrder();
+    idx::vector< std::string > words = idx1->getWordOrder();
     int size = static_cast<int>(words.size());
-    if (addPos < 1) addPos = 1;
-    if (addPos > size + 1) addPos = size + 1;
+    if (addPos < 1) {
+      addPos = 1;
+    }
+    if (addPos > size + 1) {
+      addPos = size + 1;
+    }
     const auto& w2 = idx2->getWordOrder();
     auto insertIt = words.begin() + (addPos - 1);
     words.insert(insertIt, w2.begin(), w2.end());
@@ -307,7 +341,8 @@ public:
               << addPos << " of doc1_index\n";
   }
 
-  void intersect(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name) {
+  void intersect(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name)
+  {
     auto it1 = findIndex(idx1Name);
     auto it2 = findIndex(idx2Name);
     if (it1 == indexesTree_.end() || it2 == indexesTree_.end()) {
@@ -322,10 +357,10 @@ public:
       int total = 0;
       for (auto entryIt = idx1->begin(); entryIt != idx1->end(); ++entryIt) {
         const std::string& word = entryIt->first;
-        const idx::vector<int>& pos1 = entryIt->second;
+        const idx::vector< int >& pos1 = entryIt->second;
         auto foundIt = idx2->find(word);
         if (foundIt != idx2->end()) {
-          idx::vector<int> combined = pos1;
+          idx::vector< int > combined(pos1);
           const auto& pos2 = foundIt->second;
           combined.insert(combined.end(), pos2.begin(), pos2.end());
           newIdx->addEntry(word, combined);
@@ -343,7 +378,8 @@ public:
               << newIdx->uniqueWords() << " common words\n";
   }
 
-  void subtract(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name) {
+  void subtract(const std::string& newName, const std::string& idx1Name, const std::string& idx2Name)
+  {
     auto it1 = findIndex(idx1Name);
     auto it2 = findIndex(idx2Name);
     if (it1 == indexesTree_.end() || it2 == indexesTree_.end()) {
@@ -374,7 +410,8 @@ public:
               << idx1Name << "'\n";
   }
 
-  bool indexExists(const std::string & name) const {
+  bool indexExists(const std::string & name) const
+  {
     return findIndex(name) != indexesTree_.end();
   }
 };

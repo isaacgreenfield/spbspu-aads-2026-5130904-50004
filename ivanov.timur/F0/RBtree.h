@@ -6,61 +6,79 @@
 
 namespace ivanov {
 template <class Key, class Value>
-class RBtree {
+class RBtree
+{
 public:
   class iterator;
   class const_iterator;
 private:
-  struct Node {
-    std::pair<const Key, Value> data;
+  struct Node
+  {
+    std::pair< const Key, Value > data;
     bool color;
     Node *left;
     Node *right;
     Node *parent;
 
-    Node(const Key& k, const Value& v, bool c = true)
-        : data(k, v), color(c), left(nullptr), right(nullptr), parent(nullptr) {}
+    Node(const Key& k, const Value& v, bool c = true):
+    data(k, v),
+    color(c),
+    left(nullptr),
+    right(nullptr),
+    parent(nullptr)
+    {}
   };
 
   Node *root;
   Node *NIL;
 
-  void leftRotate(Node *x) {
+  void leftRotate(Node *x)
+  {
     Node *y = x->right;
     x->right = y->left;
-    if (y->left != NIL)
+    if (y->left != NIL) {
       y->left->parent = x;
+    }
 
     y->parent = x->parent;
-    if (x->parent == NIL)
+    if (x->parent == NIL) {
       root = y;
-    else if (x == x->parent->left)
+    }
+    else if (x == x->parent->left) {
       x->parent->left = y;
-    else
+    }
+    else {
       x->parent->right = y;
+    }
 
     y->left = x;
     x->parent = y;
   }
 
-  void rightRotate(Node *x) {
+  void rightRotate(Node *x)
+  {
     Node *y = x->left;
     x->left = y->right;
-    if (y->right != NIL)
+    if (y->right != NIL) {
       y->right->parent = x;
+    }
 
     y->parent = x->parent;
-    if (x->parent == NIL)
+    if (x->parent == NIL) {
       root = y;
-    else if (x == x->parent->right)
+    }
+    else if (x == x->parent->right) {
       x->parent->right = y;
-    else
+    }
+    else {
       x->parent->left = y;
+    }
 
     y->right = x;
     x->parent = y;
   }
-  void insertFixUp(Node *z) {
+  void insertFixUp(Node *z)
+  {
     while (z->parent->color == true) {
       if (z->parent == z->parent->parent->left) {
         Node *y = z->parent->parent->right;
@@ -99,32 +117,44 @@ private:
     root->color = false;
   }
 
-  size_t sizeRec(Node* node) const {
-    if (node == NIL) return 0;
+  size_t sizeRec(Node* node) const
+  {
+    if (node == NIL) {
+      return 0;
+    }
     return 1 + sizeRec(node->left) + sizeRec(node->right);
   }
 
-  void transplant(Node *u, Node *v) {
-    if (u->parent == NIL)
+  void transplant(Node *u, Node *v)
+  {
+    if (u->parent == NIL) {
       root = v;
-    else if (u == u->parent->left)
+    }
+    else if (u == u->parent->left) {
       u->parent->left = v;
-    else
+    }
+    else {
       u->parent->right = v;
+    }
     v->parent = u->parent;
   }
-  Node* minimum(Node *node) const {
-    while (node->left != NIL)
+  Node* minimum(Node *node) const
+  {
+    while (node->left != NIL) {
       node = node->left;
+    }
     return node;
   }
 
-  Node* maximum(Node *node) const {
-    while (node->right != NIL)
+  Node* maximum(Node *node) const
+  {
+    while (node->right != NIL) {
       node = node->right;
+    }
     return node;
   }
-  void deleteFixUp(Node *x) {
+  void deleteFixUp(Node *x)
+  {
     while (x != root && x->color == false) {
       if (x == x->parent->left) {
         Node *w = x->parent->right;
@@ -178,7 +208,8 @@ private:
     }
     x->color = false;
   }
-  void deleteNode(Node *z) {
+  void deleteNode(Node *z)
+  {
     Node *y = z;
     Node *x;
     bool y_original_color = y->color;
@@ -205,19 +236,22 @@ private:
       y->left->parent = y;
       y->color = z->color;
     }
-    if (y_original_color == false)
+    if (y_original_color == false) {
       deleteFixUp(x);
+    }
     delete z;
   }
 
-  void clear(Node *node) {
+  void clear(Node *node)
+  {
     if (node != NIL) {
       clear(node->left);
       clear(node->right);
       delete node;
     }
   }
-  void inorder(Node *node, std::ostream& os = std::cout) const {
+  void inorder(Node *node, std::ostream& os = std::cout) const
+  {
     if (node != NIL) {
       inorder(node->left, os);
       os << node->data.first << " -> " << node->data.second
@@ -227,87 +261,110 @@ private:
   }
 
   template<typename Func>
-  void forEachNode(Node* node, Func f) const {
+  void forEachNode(Node* node, Func f) const
+  {
     if (node == NIL) return;
     forEachNode(node->left, f);
     f(node->data.first, node->data.second);
     forEachNode(node->right, f);
   }
 
-  Node* searchNode(const Key& key) const {
+  Node* searchNode(const Key& key) const
+  {
     Node *curr = root;
     while (curr != NIL) {
-      if (key < curr->data.first)
+      if (key < curr->data.first) {
         curr = curr->left;
-      else if (key > curr->data.first)
+      }
+      else if (key > curr->data.first) {
         curr = curr->right;
-      else
+      }
+      else {
         return curr;
+      }
     }
     return NIL;
   }
 
 public:
-  RBtree() : root(nullptr), NIL(new Node(Key(), Value(), false)) {
+  RBtree():
+  root(nullptr),
+  NIL(new Node(Key(), Value(), false))
+  {
     NIL->left = NIL;
     NIL->right = NIL;
     NIL->parent = NIL;
     root = NIL;
   }
-  ~RBtree() {
+  ~RBtree()
+  {
     clear(root);
     delete NIL;
   }
 
-  void remove(const Key& key) {
+  void remove(const Key& key)
+  {
     Node *z = searchNode(key);
-    if (z != NIL)
+    if (z != NIL) {
       deleteNode(z);
+    }
   }
 
-  iterator find(const Key& key) {
+  iterator find(const Key& key)
+  {
     Node* node = searchNode(key);
-    if (node != NIL)
+    if (node != NIL) {
       return iterator(node, this);
+    }
     return end();
   }
-  const_iterator find(const Key& key) const {
+  const_iterator find(const Key& key) const
+  {
     Node* node = searchNode(key);
-    if (node != NIL)
+    if (node != NIL) {
       return const_iterator(node, this);
+    }
     return end();
   }
 
-  bool contains(const Key& key) const {
+  bool contains(const Key& key) const
+  {
     return searchNode(key) != NIL;
   }
 
-  void clear() {
+  void clear()
+  {
     clear(root);
     root = NIL;
   }
-  bool empty() const {
+  bool empty() const
+  {
     return root == NIL;
   }
-  void print() const {
+  void print() const
+  {
     inorder(root);
   }
 
   template<typename Func>
-  void forEach(Func f) const {
+  void forEach(Func f) const
+  {
     forEachNode(root, f);
   }
 
-  void insert(const Key& key, const Value& value) {
+  void insert(const Key& key, const Value& value)
+  {
     Node *z = new Node(key, value);
     Node *y = NIL;
     Node *x = root;
     while (x != NIL) {
       y = x;
-      if (key < x->data.first)
+      if (key < x->data.first) {
         x = x->left;
-      else if (key > x->data.first)
+      }
+      else if (key > x->data.first) {
         x = x->right;
+      }
       else {
         x->data.second = value;
         delete z;
@@ -315,25 +372,31 @@ public:
       }
     }
     z->parent = y;
-    if (y == NIL)
+    if (y == NIL) {
       root = z;
-    else if (key < y->data.first)
+    }
+    else if (key < y->data.first) {
       y->left = z;
-    else
+    }
+    else {
       y->right = z;
+    }
     z->left = NIL;
     z->right = NIL;
     z->color = true;
     insertFixUp(z);
   }
 
-  size_t size() const { return sizeRec(root); }
+  size_t size() const
+  {
+    return sizeRec(root);
+  }
 
   class iterator {
     friend class RBtree;
   public:
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type = std::pair<const Key, Value>;
+    using value_type = std::pair< const Key, Value >;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
     using reference = value_type&;
@@ -343,36 +406,44 @@ public:
     tree(nullptr)
     {}
 
-    reference operator*() const {
+    reference operator*() const
+    {
       return current->data;
     }
-    pointer operator->() const {
+    pointer operator->() const
+    {
       return &current->data;
     }
 
-    iterator& operator++() {
+    iterator& operator++()
+    {
       increment();
       return *this;
     }
-    iterator operator++(int) {
+    iterator operator++(int)
+    {
       iterator tmp = *this;
       increment();
       return tmp;
     }
-    iterator& operator--() {
+    iterator& operator--()
+    {
       decrement();
       return *this;
     }
-    iterator operator--(int) {
+    iterator operator--(int)
+    {
       iterator tmp = *this;
       decrement();
       return tmp;
     }
 
-    bool operator==(const iterator& other) const {
+    bool operator==(const iterator& other) const
+    {
       return current == other.current;
     }
-    bool operator!=(const iterator& other) const {
+    bool operator!=(const iterator& other) const
+    {
       return !(*this == other);
     }
 
@@ -385,7 +456,8 @@ public:
     tree(t)
     {}
 
-    void increment() {
+    void increment()
+    {
       if (current == tree->NIL) {
         return;
       }
@@ -403,7 +475,8 @@ public:
       }
     }
 
-    void decrement() {
+    void decrement()
+    {
       if (current == tree->NIL) {
         current = tree->root;
         if (current != tree->NIL) {
@@ -431,7 +504,7 @@ public:
     friend class RBtree;
   public:
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type = const std::pair<const Key, Value>;
+    using value_type = const std::pair< const Key, Value >;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
     using reference = value_type&;
@@ -446,36 +519,44 @@ public:
     tree(it.tree)
     {}
 
-    reference operator*() const {
+    reference operator*() const
+    {
       return current->data;
     }
-    pointer operator->() const {
+    pointer operator->() const
+    {
       return &current->data;
     }
 
-    const_iterator& operator++() {
+    const_iterator& operator++()
+    {
       increment();
       return *this;
     }
-    const_iterator operator++(int) {
+    const_iterator operator++(int)
+    {
       const_iterator tmp = *this;
       increment();
       return tmp;
     }
-    const_iterator& operator--() {
+    const_iterator& operator--()
+    {
       decrement();
       return *this;
     }
-    const_iterator operator--(int) {
+    const_iterator operator--(int)
+    {
       const_iterator tmp = *this;
       decrement();
       return tmp;
     }
 
-    bool operator==(const const_iterator& other) const {
+    bool operator==(const const_iterator& other) const
+    {
       return current == other.current;
     }
-    bool operator!=(const const_iterator& other) const {
+    bool operator!=(const const_iterator& other) const
+    {
       return !(*this == other);
     }
 
@@ -488,8 +569,11 @@ public:
     tree(t)
     {}
 
-    void increment() {
-      if (current == tree->NIL) return;
+    void increment()
+    {
+      if (current == tree->NIL) {
+        return;
+      }
       if (current->right != tree->NIL) {
         current = current->right;
         while (current->left != tree->NIL)
@@ -504,7 +588,8 @@ public:
       }
     }
 
-    void decrement() {
+    void decrement()
+    {
       if (current == tree->NIL) {
         current = tree->root;
         if (current != tree->NIL) {
@@ -528,22 +613,28 @@ public:
     }
   };
 
-  iterator begin() {
+  iterator begin()
+  {
     return iterator(minimum(root), this);
   }
-  iterator end() {
+  iterator end()
+  {
     return iterator(NIL, this);
   }
-  const_iterator begin() const {
+  const_iterator begin() const
+  {
     return const_iterator(minimum(root), this);
   }
-  const_iterator end() const {
+  const_iterator end() const
+  {
     return const_iterator(NIL, this);
   }
-  const_iterator cbegin() const {
+  const_iterator cbegin() const
+  {
     return begin();
   }
-  const_iterator cend() const {
+  const_iterator cend() const
+  {
     return end();
   }
 };

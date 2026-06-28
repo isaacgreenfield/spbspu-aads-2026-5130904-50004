@@ -6,7 +6,9 @@ int main() {
   std::string line;
 
   while (std::getline(std::cin, line)) {
-    if (line.empty()) continue;
+    if (line.empty()) {
+      continue;
+    }
 
     std::istringstream iss(line);
     std::string cmd;
