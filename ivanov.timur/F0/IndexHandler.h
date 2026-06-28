@@ -28,13 +28,8 @@ private:
     auto it = findIndex(name);
     if (it != indexesTree_.end()) {
       Index* old = it->second;
-      try {
-        indexesTree_.insert(name, newIdx);
-        delete old;
-      } catch (...) {
-        delete newIdx;
-        throw;
-      }
+      it->second = newIdx;
+      delete old;
     } else {
       try {
         indexesTree_.insert(name, newIdx);
@@ -234,9 +229,9 @@ public:
     }
     Index* idx1 = it1->second;
     Index* idx2 = it2->second;
-    idx::vector<std::string> words = idx2->getWordOrder();
-    const auto& w1 = idx1->getWordOrder();
-    words.insert(words.end(), w1.begin(), w1.end());
+    idx::vector<std::string> words = idx1->getWordOrder();
+    const auto& w2 = idx2->getWordOrder();
+    words.insert(words.end(), w2.begin(), w2.end());
 
     Index* newIdx = buildFromWords(words, false);
     addIndex(newName, newIdx);
@@ -254,10 +249,10 @@ public:
     }
     Index* idx1 = it1->second;
     Index* idx2 = it2->second;
-    idx::vector<std::string> words = idx2->getWordOrder();
+    idx::vector<std::string> words = idx1->getWordOrder();
     words.push_back("\n");
-    const auto& w1 = idx1->getWordOrder();
-    words.insert(words.end(), w1.begin(), w1.end());
+    const auto& w2 = idx2->getWordOrder();
+    words.insert(words.end(), w2.begin(), w2.end());
 
     Index* newIdx = buildFromWords(words, true);
     addIndex(newName, newIdx);
@@ -377,6 +372,10 @@ public:
     std::cout << "Index '" << newName << "' created with "
               << newIdx->uniqueWords() << " unique words from '"
               << idx1Name << "'\n";
+  }
+
+  bool indexExists(const std::string & name) const {
+    return findIndex(name) != indexesTree_.end();
   }
 };
 

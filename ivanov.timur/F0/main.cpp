@@ -29,19 +29,26 @@ int main() {
       }
     }
     else if (cmd == "search") {
-      std::string query;
-      std::getline(iss, query);
-      size_t start = query.find_first_not_of(" \t");
-      if (start != std::string::npos) {
-        query = query.substr(start);
-      } else {
-        query.clear();
-      }
-
-      if (!query.empty()) {
-        handler.search(query);
-      } else {
+      std::string rest;
+      std::getline(iss, rest);
+      size_t start = rest.find_first_not_of(" \t");
+      if (start == std::string::npos) {
         std::cout << "Empty query.\n";
+        continue;
+      }
+      rest = rest.substr(start);
+
+      std::istringstream iss2(rest);
+      std::string w1, w2;
+      if (iss2 >> w1 && iss2 >> w2) {
+        std::string extra;
+        if (!(iss2 >> extra) && handler.indexExists(w2)) {
+          handler.searchWord(w1, w2);
+        } else {
+          handler.search(rest);
+        }
+      } else {
+        handler.search(rest);
       }
     }
     else if (cmd == "right_merge") {

@@ -78,14 +78,15 @@ namespace idx {
     std::string reconstructText() const {
       if (totalWords_ == 0) return {};
       std::string result;
-      size_t totalChars = 0;
-      for (size_t i = 0; i < wordOrder_.size(); ++i)
-        totalChars += wordOrder_[i].size();
-      result.reserve(totalChars + wordOrder_.size() - 1);
-
       for (size_t i = 0; i < wordOrder_.size(); ++i) {
-        if (i > 0) result += ' ';
-        result += wordOrder_[i];
+        const std::string& w = wordOrder_[i];
+        if (w == "\n") {
+          result += '\n';
+        } else {
+          if (i > 0 && wordOrder_[i-1] != "\n")
+            result += ' ';
+          result += w;
+        }
       }
       return result;
     }
