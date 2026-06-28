@@ -150,14 +150,23 @@ public:
       delete existing;
     }
 
-    Index* newIdx = new Index();
-    if (!newIdx->buildFromFile(filename)) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
       std::cerr << "Error: cannot open file " << filename << "\n";
-      delete newIdx;
       return;
     }
+
+    Index* newIdx = nullptr;
+    try {
+      newIdx = new Index(file);
+    } catch (const std::exception& e) {
+      std::cerr << "Error creating index: " << e.what() << "\n";
+      return;
+    }
+
     indexesTree_.insert(name, newIdx);
-    std::cout << "Index '" << name << "' created from " << filename << " (" << newIdx->totalWords() << " words)" << "\n";
+    std::cout << "Index '" << name << "' created from " << filename
+              << " (" << newIdx->totalWords() << " words)\n";
   }
 
   void writeIndex(const std::string& filename, const std::string& indexName) {

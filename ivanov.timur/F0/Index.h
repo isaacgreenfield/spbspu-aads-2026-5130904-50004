@@ -27,15 +27,15 @@ namespace idx {
     totalWords_(0)
     {}
 
-    bool buildFromFile(const std::string& filename) {
-      std::ifstream file(filename);
-      if (!file.is_open()) return false;
-      clear();
+    explicit Index(std::istream& input):
+    totalWords_(0)
+    {
+      ivanov::RBtree<std::string, vector<int>> tmpInvIndex;
+      vector<std::string> tmpWordOrder;
+      size_t pos = 0;
 
       std::string line;
-      int pos = 0;
-
-      while (std::getline(file, line)) {
+      while (std::getline(input, line)) {
         size_t start = 0;
         while (start < line.size()) {
           while (start < line.size() && std::isspace(static_cast<unsigned char>(line[start])))
@@ -48,23 +48,27 @@ namespace idx {
 
           std::string word = normalize(line.substr(start, end - start));
           if (!word.empty()) {
-            wordOrder_.push_back(word);
+            tmpWordOrder.push_back(word);
 
-            auto* positions = invIndex_.search(word);
+            auto* positions = tmpInvIndex.search(word);
             if (positions) {
               positions->push_back(pos);
             } else {
               vector<int> tmp;
               tmp.push_back(pos);
-              invIndex_.insert(word, tmp);
+              tmpInvIndex.insert(word, tmp);
             }
             ++pos;
           }
           start = end;
         }
       }
+      if (input.bad()) {
+        throw std::runtime_error("Error reading from stream");
+      }
+      std::swap(invIndex_, tmpInvIndex);
+      std::swap(wordOrder_, tmpWordOrder);
       totalWords_ = pos;
-      return true;
     }
 
     void clear() {
