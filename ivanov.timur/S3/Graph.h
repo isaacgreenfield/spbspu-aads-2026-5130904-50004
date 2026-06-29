@@ -1,6 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include "HashTable.h"
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -11,7 +12,6 @@
 #include <boost/hash2/hash_append.hpp>
 #include <boost/hash2/blake2.hpp>
 #include <boost/hash2/flavor.hpp>
-#include "HashTable.h"
 
 namespace ivanov {
   template< class Key >
