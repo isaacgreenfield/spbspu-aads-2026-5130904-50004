@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <vector>
+#include "idx-vector.h"
 #include "BSTtree.h"
 
 namespace ivanov {
@@ -21,7 +21,7 @@ namespace ivanov {
     void execute(const std::string &line, bool &isAnything, bool silent);
 
   private:
-    std::vector<std::pair<std::string, tree> > datasets;
+    idx::vector<std::pair<std::string, tree> > datasets;
 
     tree *getDataset(const std::string &name);
 
@@ -46,8 +46,8 @@ namespace ivanov {
 
       tree *tr = getDataset(dname);
       if (!tr) {
-        datasets.push_back(std::make_pair(dname, tree()));
-        tr = &datasets.back().second;
+        datasets.emplace_back(dname, tree());
+        tr = &datasets[datasets.size() - 1].second;
       }
 
       int key;
@@ -134,7 +134,7 @@ namespace ivanov {
 
       tree *existing = getDataset(name);
       if (existing) *existing = std::move(newtree);
-      else datasets.push_back(std::make_pair(name, std::move(newtree)));
+      else datasets.emplace_back(name, std::move(newtree));
 
       if (silent) isAnything = false;
     } else if (!silent) invalid();
