@@ -3,7 +3,6 @@
 #include "RBtree.h"
 #include "ix-vector.h"
 
-#include <fstream>
 
 namespace idx {
   inline std::string normalize(const std::string& raw)
